@@ -12,7 +12,13 @@ import { __ } from "@wordpress/i18n";
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
 import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
-import { Button, PanelBody, Spinner, TextControl } from "@wordpress/components";
+import {
+	Button,
+	PanelBody,
+	SelectControl,
+	Spinner,
+	TextControl,
+} from "@wordpress/components";
 import { useState, useEffect } from "react";
 
 import "./editor.scss";
@@ -37,6 +43,27 @@ export default function Edit({ attributes, setAttributes }) {
 	const [loadingFields, setLoadingFields] = useState(false);
 	const [error, setError] = useState("");
 	const pinnedSet = new Set((pinnedEntryIds || []).map((id) => Number(id)));
+	const formOptions = [
+		{ label: __("-- Select Form --", "petition-names"), value: "" },
+		...forms.map((form) => ({
+			label: form.title,
+			value: String(form.id),
+		})),
+	];
+	const nameFieldOptions = [
+		{ label: __("-- Select Name Field --", "petition-names"), value: "" },
+		...fields
+			.filter(
+				(field) =>
+					field.type === "name" ||
+					field.inputType === "text" ||
+					field.inputType === "name",
+			)
+			.map((field) => ({
+				label: field.label,
+				value: String(field.id),
+			})),
+	];
 
 	// Fetch Gravity Forms list
 	useEffect(() => {
@@ -156,9 +183,46 @@ export default function Edit({ attributes, setAttributes }) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody title={__("Form settings", "petition-names")} initialOpen={true}>
+					{loadingForms ? (
+						<Spinner />
+					) : (
+						<SelectControl
+							label={__("Select a Gravity Form", "petition-names")}
+							value={formId}
+							options={formOptions}
+							onChange={(value) => {
+								setAttributes({
+									formId: value,
+									nameFieldId: "",
+									pinnedEntryIds: [],
+								});
+							}}
+						/>
+					)}
+
+					{formId && (
+						loadingFields ? (
+							<Spinner />
+						) : (
+							<SelectControl
+								label={__("Select the Name Field", "petition-names")}
+								value={nameFieldId}
+								options={nameFieldOptions}
+								onChange={(value) =>
+									setAttributes({
+										nameFieldId: value,
+										pinnedEntryIds: [],
+									})
+								}
+							/>
+						)
+					)}
+				</PanelBody>
+
 				<PanelBody
 					title={__("Pinned submissions", "petition-names")}
-					initialOpen={true}
+					initialOpen={false}
 				>
 					{!formId || !nameFieldId ? (
 						<p>
@@ -227,65 +291,16 @@ export default function Edit({ attributes, setAttributes }) {
 			<div {...useBlockProps()}>
 				<h4>{__("Petition Names Block", "petition-names")}</h4>
 				{error && <div style={{ color: "red" }}>{error}</div>}
-				<div style={{ marginBottom: "1em" }}>
-					<label>{__("Select a Gravity Form:", "petition-names")}</label>
-					<br />
-					{loadingForms ? (
-						<span>{__("Loading forms...", "petition-names")}</span>
-					) : (
-						<select
-							value={formId}
-							onChange={(e) => {
-								setAttributes({
-									formId: e.target.value,
-									nameFieldId: "",
-									pinnedEntryIds: [],
-								});
-							}}
-						>
-							<option value="">
-								{__("-- Select Form --", "petition-names")}
-							</option>
-							{forms.map((form) => (
-								<option key={form.id} value={form.id}>
-									{form.title}
-								</option>
-							))}
-						</select>
-					)}
-				</div>
-				{formId && (
-					<div style={{ marginBottom: "1em" }}>
-						<label>{__("Select the Name Field:", "petition-names")}</label>
-						<br />
-						{loadingFields ? (
-							<span>{__("Loading fields...", "petition-names")}</span>
-						) : (
-							<select
-								value={nameFieldId}
-								onChange={(e) =>
-									setAttributes({
-										nameFieldId: e.target.value,
-										pinnedEntryIds: [],
-									})
-								}
-							>
-								<option value="">
-									{__("-- Select Name Field --", "petition-names")}
-								</option>
-								{fields
-									.filter(
-										(field) =>
-											field.type === "name" ||
-											field.inputType === "text" ||
-											field.inputType === "name",
-									)
-									.map((field) => (
-										<option key={field.id} value={field.id}>
-											{field.label}
-										</option>
-									))}
-							</select>
+				{!formId && (
+					<div>
+						{__("Select a form in the block settings sidebar.", "petition-names")}
+					</div>
+				)}
+				{formId && !nameFieldId && (
+					<div>
+						{__(
+							"Select a name field in the block settings sidebar.",
+							"petition-names",
 						)}
 					</div>
 				)}
@@ -295,6 +310,8 @@ export default function Edit({ attributes, setAttributes }) {
 							"Ready! This block will show a paginated list of first names and last initials from this form.",
 							"petition-names",
 						)}
+						{pinnedEntryIds.length > 0 &&
+							` ${pinnedEntryIds.length} ${__("submission(s) pinned.", "petition-names")}`}
 					</div>
 				)}
 			</div>
