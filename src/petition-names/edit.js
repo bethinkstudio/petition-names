@@ -11,7 +11,8 @@ import { __ } from "@wordpress/i18n";
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { useBlockProps } from "@wordpress/block-editor";
+import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
+import { Button, PanelBody, Spinner, TextControl } from "@wordpress/components";
 import { useState, useEffect } from "react";
 
 import "./editor.scss";
@@ -25,12 +26,17 @@ import "./editor.scss";
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-	const { formId, nameFieldId } = attributes;
+	const { formId, nameFieldId, pinnedEntryIds = [] } = attributes;
 	const [forms, setForms] = useState([]);
 	const [fields, setFields] = useState([]);
+	const [entrySearch, setEntrySearch] = useState("");
+	const [entryResults, setEntryResults] = useState([]);
+	const [loadingEntrySearch, setLoadingEntrySearch] = useState(false);
+	const [entryLabels, setEntryLabels] = useState({});
 	const [loadingForms, setLoadingForms] = useState(false);
 	const [loadingFields, setLoadingFields] = useState(false);
 	const [error, setError] = useState("");
+	const pinnedSet = new Set((pinnedEntryIds || []).map((id) => Number(id)));
 
 	// Fetch Gravity Forms list
 	useEffect(() => {
@@ -69,71 +75,229 @@ export default function Edit({ attributes, setAttributes }) {
 			});
 	}, [formId]);
 
+	useEffect(() => {
+		if (!formId || !nameFieldId) {
+			setEntryResults([]);
+			setLoadingEntrySearch(false);
+			return;
+		}
+
+		if (entrySearch.trim().length < 2) {
+			setEntryResults([]);
+			setLoadingEntrySearch(false);
+			return;
+		}
+
+		setLoadingEntrySearch(true);
+		const timeoutId = setTimeout(() => {
+			wp.apiFetch({
+				path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
+					nameFieldId,
+				)}&search=${encodeURIComponent(entrySearch.trim())}`,
+			})
+				.then((data) => {
+					setEntryResults(Array.isArray(data) ? data : []);
+					setEntryLabels((current) => {
+						const next = { ...current };
+						(data || []).forEach((entry) => {
+							next[entry.id] = entry.name || `#${entry.id}`;
+						});
+						return next;
+					});
+					setLoadingEntrySearch(false);
+				})
+				.catch(() => {
+					setEntryResults([]);
+					setLoadingEntrySearch(false);
+				});
+		}, 250);
+
+		return () => clearTimeout(timeoutId);
+	}, [formId, nameFieldId, entrySearch]);
+
+	useEffect(() => {
+		if (!formId || !nameFieldId || !pinnedEntryIds.length) {
+			return;
+		}
+
+		wp.apiFetch({
+			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
+				nameFieldId,
+			)}&ids=${encodeURIComponent(pinnedEntryIds.join(","))}`,
+		})
+			.then((data) => {
+				setEntryLabels((current) => {
+					const next = { ...current };
+					(data || []).forEach((entry) => {
+						next[entry.id] = entry.name || `#${entry.id}`;
+					});
+					return next;
+				});
+			})
+			.catch(() => {});
+	}, [formId, nameFieldId, pinnedEntryIds]);
+
+	const togglePinnedEntry = (entryId) => {
+		const normalizedId = Number(entryId);
+		if (pinnedSet.has(normalizedId)) {
+			setAttributes({
+				pinnedEntryIds: pinnedEntryIds.filter(
+					(id) => Number(id) !== normalizedId,
+				),
+			});
+			return;
+		}
+
+		setAttributes({
+			pinnedEntryIds: [...pinnedEntryIds, normalizedId],
+		});
+	};
+
 	return (
-		<div {...useBlockProps()}>
-			<h4>{__("Petition Names Block", "petition-names")}</h4>
-			{error && <div style={{ color: "red" }}>{error}</div>}
-			<div style={{ marginBottom: "1em" }}>
-				<label>{__("Select a Gravity Form:", "petition-names")}</label>
-				<br />
-				{loadingForms ? (
-					<span>{__("Loading forms...", "petition-names")}</span>
-				) : (
-					<select
-						value={formId}
-						onChange={(e) => {
-							setAttributes({ formId: e.target.value, nameFieldId: "" });
-						}}
-					>
-						<option value="">
-							{__("-- Select Form --", "petition-names")}
-						</option>
-						{forms.map((form) => (
-							<option key={form.id} value={form.id}>
-								{form.title}
-							</option>
-						))}
-					</select>
-				)}
-			</div>
-			{formId && (
+		<>
+			<InspectorControls>
+				<PanelBody
+					title={__("Pinned submissions", "petition-names")}
+					initialOpen={true}
+				>
+					{!formId || !nameFieldId ? (
+						<p>
+							{__(
+								"Select a form and name field first to enable submission pinning.",
+								"petition-names",
+							)}
+						</p>
+					) : (
+						<>
+							<TextControl
+								label={__("Search submissions", "petition-names")}
+								help={__(
+									"Type at least 2 characters, then pin entries to keep them at the top.",
+									"petition-names",
+								)}
+								value={entrySearch}
+								onChange={setEntrySearch}
+							/>
+							{loadingEntrySearch && <Spinner />}
+							{entryResults.map((entry) => {
+								const isPinned = pinnedSet.has(Number(entry.id));
+								return (
+									<div
+										key={entry.id}
+										style={{
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "space-between",
+											marginBottom: "8px",
+										}}
+									>
+										<span>{entry.name || `#${entry.id}`}</span>
+										<Button
+											variant={isPinned ? "secondary" : "primary"}
+											onClick={() => togglePinnedEntry(entry.id)}
+										>
+											{isPinned
+												? __("Unpin", "petition-names")
+												: __("Pin", "petition-names")}
+										</Button>
+									</div>
+								);
+							})}
+							{pinnedEntryIds.length > 0 && (
+								<div style={{ marginTop: "12px" }}>
+									<strong>{__("Pinned", "petition-names")}</strong>
+									{pinnedEntryIds.map((entryId) => (
+										<div key={entryId} style={{ marginTop: "6px" }}>
+											<Button
+												variant="link"
+												onClick={() => togglePinnedEntry(entryId)}
+											>
+												{__("Unpin", "petition-names")}
+											</Button>{" "}
+											<span>{entryLabels[entryId] || `#${entryId}`}</span>
+										</div>
+									))}
+								</div>
+							)}
+						</>
+					)}
+				</PanelBody>
+			</InspectorControls>
+
+			<div {...useBlockProps()}>
+				<h4>{__("Petition Names Block", "petition-names")}</h4>
+				{error && <div style={{ color: "red" }}>{error}</div>}
 				<div style={{ marginBottom: "1em" }}>
-					<label>{__("Select the Name Field:", "petition-names")}</label>
+					<label>{__("Select a Gravity Form:", "petition-names")}</label>
 					<br />
-					{loadingFields ? (
-						<span>{__("Loading fields...", "petition-names")}</span>
+					{loadingForms ? (
+						<span>{__("Loading forms...", "petition-names")}</span>
 					) : (
 						<select
-							value={nameFieldId}
-							onChange={(e) => setAttributes({ nameFieldId: e.target.value })}
+							value={formId}
+							onChange={(e) => {
+								setAttributes({
+									formId: e.target.value,
+									nameFieldId: "",
+									pinnedEntryIds: [],
+								});
+							}}
 						>
 							<option value="">
-								{__("-- Select Name Field --", "petition-names")}
+								{__("-- Select Form --", "petition-names")}
 							</option>
-							{fields
-								.filter(
-									(field) =>
-										field.type === "name" ||
-										field.inputType === "text" ||
-										field.inputType === "name",
-								)
-								.map((field) => (
-									<option key={field.id} value={field.id}>
-										{field.label}
-									</option>
-								))}
+							{forms.map((form) => (
+								<option key={form.id} value={form.id}>
+									{form.title}
+								</option>
+							))}
 						</select>
 					)}
 				</div>
-			)}
-			{formId && nameFieldId && (
-				<div style={{ color: "green" }}>
-					{__(
-						"Ready! This block will show a paginated list of first names and last initials from this form.",
-						"petition-names",
-					)}
-				</div>
-			)}
-		</div>
+				{formId && (
+					<div style={{ marginBottom: "1em" }}>
+						<label>{__("Select the Name Field:", "petition-names")}</label>
+						<br />
+						{loadingFields ? (
+							<span>{__("Loading fields...", "petition-names")}</span>
+						) : (
+							<select
+								value={nameFieldId}
+								onChange={(e) =>
+									setAttributes({
+										nameFieldId: e.target.value,
+										pinnedEntryIds: [],
+									})
+								}
+							>
+								<option value="">
+									{__("-- Select Name Field --", "petition-names")}
+								</option>
+								{fields
+									.filter(
+										(field) =>
+											field.type === "name" ||
+											field.inputType === "text" ||
+											field.inputType === "name",
+									)
+									.map((field) => (
+										<option key={field.id} value={field.id}>
+											{field.label}
+										</option>
+									))}
+							</select>
+						)}
+					</div>
+				)}
+				{formId && nameFieldId && (
+					<div style={{ color: "green" }}>
+						{__(
+							"Ready! This block will show a paginated list of first names and last initials from this form.",
+							"petition-names",
+						)}
+					</div>
+				)}
+			</div>
+		</>
 	);
 }
