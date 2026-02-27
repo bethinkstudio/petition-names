@@ -39,9 +39,8 @@ echo '<div class="petition-names-list"><ul>';
 foreach ( $entries as $entry ) {
     $first = rgar( $entry, "{$name_field_id}.3" );
     $last = rgar( $entry, "{$name_field_id}.6" );
-    $last_initial = $last ? strtoupper( mb_substr( $last, 0, 1 ) ) . '.' : '';
 
-    echo '<li>' . esc_html( trim( $first . ' ' . $last_initial ) ) . '</li>';
+    echo '<li>' . esc_html( trim( $first . ' ' . $last ) ) . '</li>';
 }
 echo '</ul>';
 
