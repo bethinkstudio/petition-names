@@ -29,6 +29,15 @@ return array(
 			'nameFieldId' => array(
 				'type' => 'string',
 				'default' => ''
+			),
+			'pinnedEntryIds' => array(
+				'type' => 'array',
+				'default' => array(
+					
+				),
+				'items' => array(
+					'type' => 'number'
+				)
 			)
 		)
 	)

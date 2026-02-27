@@ -18,11 +18,27 @@ if ( ! class_exists( 'GFAPI' ) ) {
 
 $form_id = absint( $attributes['formId'] );
 $name_field_id = absint( $attributes['nameFieldId'] );
+$pinned_entry_ids = array_values(
+    array_unique(
+        array_filter(
+            array_map( 'absint', (array) ( $attributes['pinnedEntryIds'] ?? array() ) )
+        )
+    )
+);
 $page = isset( $_GET['pn_page'] ) ? max( 1, intval( $_GET['pn_page'] ) ) : 1;
 $per_page = 60;
 $offset = ( $page - 1 ) * $per_page;
 
 $search_criteria = array( 'status' => 'active' );
+if ( ! empty( $pinned_entry_ids ) ) {
+    $search_criteria['field_filters'] = array(
+        array(
+            'key'      => 'id',
+            'operator' => 'not in',
+            'value'    => $pinned_entry_ids,
+        ),
+    );
+}
 $sorting = array( 'key' => 'date_created', 'direction' => 'DESC' );
 $paging = array( 'offset' => $offset, 'page_size' => $per_page );
 
@@ -36,11 +52,39 @@ if ( is_wp_error( $entries ) ) {
 
 echo '<div class="petition-names-list"><ul>';
 
-foreach ( $entries as $entry ) {
-    $first = rgar( $entry, "{$name_field_id}.3" );
-    $last = rgar( $entry, "{$name_field_id}.6" );
+$rendered_entry_ids = array();
 
-    echo '<li>' . esc_html( trim( $first . ' ' . $last ) ) . '</li>';
+if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
+    foreach ( $pinned_entry_ids as $pinned_entry_id ) {
+        $pinned_entry = GFAPI::get_entry( $pinned_entry_id );
+        if (
+            is_wp_error( $pinned_entry ) ||
+            (int) rgar( $pinned_entry, 'form_id' ) !== $form_id ||
+            'active' !== rgar( $pinned_entry, 'status' )
+        ) {
+            continue;
+        }
+
+        $pinned_name = function_exists( 'bethink_petition_names_format_entry_name' )
+            ? bethink_petition_names_format_entry_name( $pinned_entry, $name_field_id )
+            : trim( rgar( $pinned_entry, "{$name_field_id}.3" ) . ' ' . rgar( $pinned_entry, "{$name_field_id}.6" ) );
+
+        echo '<li>' . esc_html( $pinned_name ) . '</li>';
+        $rendered_entry_ids[] = (int) $pinned_entry_id;
+    }
+}
+
+foreach ( $entries as $entry ) {
+    $entry_id = (int) rgar( $entry, 'id' );
+    if ( in_array( $entry_id, $rendered_entry_ids, true ) ) {
+        continue;
+    }
+
+    $display_name = function_exists( 'bethink_petition_names_format_entry_name' )
+        ? bethink_petition_names_format_entry_name( $entry, $name_field_id )
+        : trim( rgar( $entry, "{$name_field_id}.3" ) . ' ' . rgar( $entry, "{$name_field_id}.6" ) );
+
+    echo '<li>' . esc_html( $display_name ) . '</li>';
 }
 echo '</ul>';
 
