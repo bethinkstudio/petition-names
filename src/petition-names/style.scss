@@ -12,7 +12,8 @@
 
 		> ul {
 			list-style: none;
-			padding: 0;
+			columns: auto 125px;
+			padding: 0.5em 2em;
 
 			li {
 				padding: 0.25em 0;
@@ -25,20 +26,30 @@
 		}
 		.petition-names-pagination {
 			margin-top: 1em;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 0.5em;
 
+			span,
 			a {
-				padding: 0.25em 0.5em;
 				border: 1px solid #ccc;
 				border-radius: 3px;
 				text-decoration: none;
 				color: #333;
-				margin-right: 0.25em;
+				margin-inline: 0.25em;
+
+				box-sizing: border-box;
+				text-align: center;
+				width: 3em;
+				display: inline-block;
+				padding: 0.25em 0;
 
 			}
 			.current {
-				background-color: #0073aa;
+				background-color: var(--wp--preset--color--primary, #0073aa);
 				color: #fff;
-				border-color: #0073aa;
+				border-color: var(--wp--preset--color--primary, #0073aa);
 			}
 		}
 	}

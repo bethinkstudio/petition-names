@@ -19,7 +19,7 @@ if ( ! class_exists( 'GFAPI' ) ) {
 $form_id = absint( $attributes['formId'] );
 $name_field_id = absint( $attributes['nameFieldId'] );
 $page = isset( $_GET['pn_page'] ) ? max( 1, intval( $_GET['pn_page'] ) ) : 1;
-$per_page = 20;
+$per_page = 60;
 $offset = ( $page - 1 ) * $per_page;
 
 $search_criteria = array( 'status' => 'active' );
