@@ -187,7 +187,11 @@ export default function Edit({ attributes, setAttributes }) {
 
 				const combined = [...pinnedEntries, ...recentEntries].reduce(
 					(accumulator, entry) => {
-						if (accumulator.some((existing) => Number(existing.id) === Number(entry.id))) {
+						if (
+							accumulator.some(
+								(existing) => Number(existing.id) === Number(entry.id),
+							)
+						) {
 							return accumulator;
 						}
 
@@ -231,7 +235,10 @@ export default function Edit({ attributes, setAttributes }) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__("Data source", "petition-names")} initialOpen={true}>
+				<PanelBody
+					title={__("Data source", "petition-names")}
+					initialOpen={true}
+				>
 					{loadingForms ? (
 						<Spinner />
 					) : (
@@ -249,8 +256,8 @@ export default function Edit({ attributes, setAttributes }) {
 						/>
 					)}
 
-					{formId && (
-						loadingFields ? (
+					{formId &&
+						(loadingFields ? (
 							<Spinner />
 						) : (
 							<SelectControl
@@ -264,8 +271,7 @@ export default function Edit({ attributes, setAttributes }) {
 									})
 								}
 							/>
-						)
-					)}
+						))}
 				</PanelBody>
 
 				<PanelBody
@@ -341,7 +347,10 @@ export default function Edit({ attributes, setAttributes }) {
 				{error && <div style={{ color: "red" }}>{error}</div>}
 				{!formId && (
 					<div>
-						{__("Select a form in the block settings sidebar.", "petition-names")}
+						{__(
+							"Select a form in the block settings sidebar.",
+							"petition-names",
+						)}
 					</div>
 				)}
 				{formId && !nameFieldId && (
@@ -360,7 +369,10 @@ export default function Edit({ attributes, setAttributes }) {
 								"petition-names",
 							)}
 							{pinnedEntryIds.length > 0 &&
-								` ${pinnedEntryIds.length} ${__("submission(s) pinned.", "petition-names")}`}
+								` ${pinnedEntryIds.length} ${__(
+									"submission(s) pinned.",
+									"petition-names",
+								)}`}
 						</div>
 						<strong>{__("Editor preview", "petition-names")}</strong>
 						{loadingPreview ? (
@@ -370,9 +382,7 @@ export default function Edit({ attributes, setAttributes }) {
 						) : (
 							<ul style={{ marginTop: "8px", paddingLeft: "20px" }}>
 								{previewEntries.length === 0 ? (
-									<li>
-										{__("No entries found yet.", "petition-names")}
-									</li>
+									<li>{__("No entries found yet.", "petition-names")}</li>
 								) : (
 									previewEntries.map((entry) => (
 										<li key={entry.id}>
