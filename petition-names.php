@@ -70,6 +70,8 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 	$form_id       = absint( $request['form_id'] );
 	$name_field_id = absint( $request->get_param( 'nameFieldId' ) );
 	$ids_raw       = (string) $request->get_param( 'ids' );
+	$limit         = absint( $request->get_param( 'limit' ) );
+	$page_size     = $limit > 0 ? min( 60, $limit ) : 30;
 
 	if ( ! empty( $ids_raw ) ) {
 		$ids = array_values(
@@ -97,12 +99,9 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 	}
 
 	$search = trim( sanitize_text_field( (string) $request->get_param( 'search' ) ) );
-	if ( strlen( $search ) < 2 ) {
-		return rest_ensure_response( array() );
-	}
 
 	$search_criteria = array( 'status' => 'active' );
-	if ( $name_field_id > 0 ) {
+	if ( strlen( $search ) >= 2 && $name_field_id > 0 ) {
 		$search_criteria['field_filters'] = array(
 			'mode' => 'any',
 			array(
@@ -119,7 +118,7 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 	}
 
 	$sorting = array( 'key' => 'date_created', 'direction' => 'DESC' );
-	$paging  = array( 'offset' => 0, 'page_size' => 30 );
+	$paging  = array( 'offset' => 0, 'page_size' => $page_size );
 
 	$total_count = 0;
 	$entries     = GFAPI::get_entries( $form_id, $search_criteria, $sorting, $paging, $total_count );

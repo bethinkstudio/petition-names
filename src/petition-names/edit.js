@@ -37,6 +37,8 @@ export default function Edit({ attributes, setAttributes }) {
 	const [fields, setFields] = useState([]);
 	const [entrySearch, setEntrySearch] = useState("");
 	const [entryResults, setEntryResults] = useState([]);
+	const [previewEntries, setPreviewEntries] = useState([]);
+	const [loadingPreview, setLoadingPreview] = useState(false);
 	const [loadingEntrySearch, setLoadingEntrySearch] = useState(false);
 	const [entryLabels, setEntryLabels] = useState({});
 	const [loadingForms, setLoadingForms] = useState(false);
@@ -164,6 +166,52 @@ export default function Edit({ attributes, setAttributes }) {
 			.catch(() => {});
 	}, [formId, nameFieldId, pinnedEntryIds]);
 
+	useEffect(() => {
+		if (!formId || !nameFieldId) {
+			setPreviewEntries([]);
+			setLoadingPreview(false);
+			return;
+		}
+
+		setLoadingPreview(true);
+		wp.apiFetch({
+			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
+				nameFieldId,
+			)}&limit=10`,
+		})
+			.then((data) => {
+				const recentEntries = Array.isArray(data) ? data : [];
+				const pinnedEntries = pinnedEntryIds
+					.map((id) => ({ id, name: entryLabels[id] || `#${id}` }))
+					.filter((entry) => entry.name);
+
+				const combined = [...pinnedEntries, ...recentEntries].reduce(
+					(accumulator, entry) => {
+						if (accumulator.some((existing) => Number(existing.id) === Number(entry.id))) {
+							return accumulator;
+						}
+
+						return [...accumulator, entry];
+					},
+					[],
+				);
+
+				setPreviewEntries(combined.slice(0, 10));
+				setEntryLabels((current) => {
+					const next = { ...current };
+					recentEntries.forEach((entry) => {
+						next[entry.id] = entry.name || `#${entry.id}`;
+					});
+					return next;
+				});
+				setLoadingPreview(false);
+			})
+			.catch(() => {
+				setPreviewEntries([]);
+				setLoadingPreview(false);
+			});
+	}, [formId, nameFieldId, pinnedEntryIds]);
+
 	const togglePinnedEntry = (entryId) => {
 		const normalizedId = Number(entryId);
 		if (pinnedSet.has(normalizedId)) {
@@ -183,7 +231,7 @@ export default function Edit({ attributes, setAttributes }) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__("Form settings", "petition-names")} initialOpen={true}>
+				<PanelBody title={__("Data source", "petition-names")} initialOpen={true}>
 					{loadingForms ? (
 						<Spinner />
 					) : (
@@ -305,13 +353,37 @@ export default function Edit({ attributes, setAttributes }) {
 					</div>
 				)}
 				{formId && nameFieldId && (
-					<div style={{ color: "green" }}>
-						{__(
-							"Ready! This block will show a paginated list of first names and last initials from this form.",
-							"petition-names",
+					<div>
+						<div style={{ color: "green", marginBottom: "8px" }}>
+							{__(
+								"Ready! This block will show a paginated list of first names and last initials from this form.",
+								"petition-names",
+							)}
+							{pinnedEntryIds.length > 0 &&
+								` ${pinnedEntryIds.length} ${__("submission(s) pinned.", "petition-names")}`}
+						</div>
+						<strong>{__("Editor preview", "petition-names")}</strong>
+						{loadingPreview ? (
+							<div style={{ marginTop: "8px" }}>
+								<Spinner />
+							</div>
+						) : (
+							<ul style={{ marginTop: "8px", paddingLeft: "20px" }}>
+								{previewEntries.length === 0 ? (
+									<li>
+										{__("No entries found yet.", "petition-names")}
+									</li>
+								) : (
+									previewEntries.map((entry) => (
+										<li key={entry.id}>
+											{entry.name || `#${entry.id}`}
+											{pinnedSet.has(Number(entry.id)) &&
+												` (${__("Pinned", "petition-names")})`}
+										</li>
+									))
+								)}
+							</ul>
 						)}
-						{pinnedEntryIds.length > 0 &&
-							` ${pinnedEntryIds.length} ${__("submission(s) pinned.", "petition-names")}`}
 					</div>
 				)}
 			</div>
