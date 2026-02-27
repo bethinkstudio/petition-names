@@ -389,9 +389,7 @@ export default function Edit({ attributes, setAttributes }) {
 										<li key={entry.id}>
 											{entry.name || `#${entry.id}`}
 											{pinnedSet.has(Number(entry.id)) && (
-												<Badge
-													style={{ marginInlineStart: "8px" }}
-												>
+												<Badge style={{ marginInlineStart: "8px" }}>
 													{__("Pinned", "petition-names")}
 												</Badge>
 											)}

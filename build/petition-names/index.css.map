@@ -1,0 +1,1 @@
+{"version":3,"file":"petition-names/index.css","mappings":";;;AACA;EACI;EACA;EACA;AAAJ,C","sources":["webpack://petition-names/./src/petition-names/editor.scss"],"sourcesContent":["\n.wp-block-bethink-petition-names {\n    background: #f9f9f9;\n    border: 1px solid #ddd;\n    padding: 1em;\n}\n"],"names":[],"sourceRoot":""}
