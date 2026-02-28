@@ -2,7 +2,7 @@
 Contributors:      Bethink Studio, georgestephanis
 Tags:              block, petition, gravity forms, names, signatures, gravatars, pagination
 Tested up to:      6.8
-Stable tag:        0.2.0
+Stable tag:        0.3.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,6 +79,16 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 
 == Changelog ==
 
+= 0.3.0 =
+* Hardened public REST pagination endpoint access to only published block configurations
+* Removed raw email addresses from public pagination responses; returns gravatar hash only
+* Fixed pinned-entry pagination behavior so pinned entries are inclusive of per-page limits
+* Fixed offset handling so displaced entries are not skipped on subsequent pages
+* Updated editor preview to account for pinned entries within configured items per page
+* Added persistent option-based cache for published block configs with cache invalidation on post save/delete
+* Added WordPress Coding Standards tooling (`composer.json`, `phpcs.xml.dist`) with npm integration
+* Resolved WPCS violations across plugin PHP files
+
 = 0.2.0 =
 * Added configurable items per page (20-200 entries, increments of 5)
 * Added adjustable column width control (50-400px, increments of 5)
@@ -98,6 +108,9 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 * WordPress Block Editor integration
 
 == Upgrade Notice ==
+
+= 0.3.0 =
+Security and quality update: tightens REST data exposure controls, improves pinned-pagination correctness, and adds WPCS-based linting/formatting workflows.
 
 = 0.2.0 =
 Major feature release! New gravatar support, configurable display options, pinned entries, animations, and much more. Backup your site before upgrading.
