@@ -35,6 +35,10 @@
 		"itemsPerPage": {
 			"type": "number",
 			"default": 60
+		},
+		"columnWidth": {
+			"type": "number",
+			"default": 125
 		}
 	}
 }

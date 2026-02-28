@@ -33,7 +33,7 @@ import "./editor.scss";
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-	const { formId, nameFieldId, pinnedEntryIds = [], itemsPerPage = 60 } = attributes;
+	const { formId, nameFieldId, pinnedEntryIds = [], itemsPerPage = 60, columnWidth = 125 } = attributes;
 	const [forms, setForms] = useState([]);
 	const [fields, setFields] = useState([]);
 	const [entrySearch, setEntrySearch] = useState("");
@@ -290,6 +290,20 @@ export default function Edit({ attributes, setAttributes }) {
 							const numValue = parseInt(value, 10);
 							if (!isNaN(numValue) && numValue >= 20 && numValue <= 200) {
 								setAttributes({ itemsPerPage: numValue });
+							}
+						}}
+					/>
+					<NumberControl
+						label={__("Column width", "petition-names")}
+						help={__("Width of each column in pixels (50-400px)", "petition-names")}
+						value={columnWidth}
+						min={50}
+						max={400}
+						step={5}
+						onChange={(value) => {
+							const numValue = parseInt(value, 10);
+							if (!isNaN(numValue) && numValue >= 50 && numValue <= 400) {
+								setAttributes({ columnWidth: numValue });
 							}
 						}}
 					/>

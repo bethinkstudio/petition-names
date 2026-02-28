@@ -12,7 +12,7 @@
 
 		> ul {
 			list-style: none;
-			columns: auto 125px;
+			columns: auto var(--petition-names-column-width, 125px);
 			padding: 0.5em 2em;
 
 			li {

@@ -18,6 +18,7 @@ if ( ! class_exists( 'GFAPI' ) ) {
 
 $form_id = absint( $attributes['formId'] );
 $name_field_id = absint( $attributes['nameFieldId'] );
+$column_width = isset( $attributes['columnWidth'] ) ? max( 50, min( 400, absint( $attributes['columnWidth'] ) ) ) : 125;
 $pinned_entry_ids = array_values(
     array_unique(
         array_filter(
@@ -50,7 +51,7 @@ if ( is_wp_error( $entries ) ) {
     return;
 }
 
-echo '<div class="petition-names-list"><ul>';
+echo '<div class="petition-names-list" style="--petition-names-column-width: ' . esc_attr( $column_width ) . 'px;"><ul>';
 
 $rendered_entry_ids = array();
 
