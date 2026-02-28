@@ -18,6 +18,8 @@ if ( ! class_exists( 'GFAPI' ) ) {
 
 $form_id = absint( $attributes['formId'] );
 $name_field_id = absint( $attributes['nameFieldId'] );
+$email_field_id = isset( $attributes['showGravatars'] ) && $attributes['showGravatars'] ? absint( $attributes['emailFieldId'] ) : 0;
+$column_width = isset( $attributes['columnWidth'] ) ? max( 50, min( 400, absint( $attributes['columnWidth'] ) ) ) : 125;
 $pinned_entry_ids = array_values(
     array_unique(
         array_filter(
@@ -26,7 +28,7 @@ $pinned_entry_ids = array_values(
     )
 );
 $page = isset( $_GET['pn_page'] ) ? max( 1, intval( $_GET['pn_page'] ) ) : 1;
-$per_page = 60;
+$per_page = isset( $attributes['itemsPerPage'] ) ? max( 20, min( 200, absint( $attributes['itemsPerPage'] ) ) ) : 60;
 $offset = ( $page - 1 ) * $per_page;
 
 $search_criteria = array( 'status' => 'active' );
@@ -50,7 +52,7 @@ if ( is_wp_error( $entries ) ) {
     return;
 }
 
-echo '<div class="petition-names-list"><ul>';
+echo '<div class="petition-names-list" style="--petition-names-column-width: ' . esc_attr( $column_width ) . 'px;"><ul>';
 
 $rendered_entry_ids = array();
 

@@ -38,6 +38,22 @@ return array(
 				'items' => array(
 					'type' => 'number'
 				)
+			),
+			'itemsPerPage' => array(
+				'type' => 'number',
+				'default' => 60
+			),
+			'columnWidth' => array(
+				'type' => 'number',
+				'default' => 125
+			),
+			'showGravatars' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
+			'emailFieldId' => array(
+				'type' => 'string',
+				'default' => ''
 			)
 		)
 	)
