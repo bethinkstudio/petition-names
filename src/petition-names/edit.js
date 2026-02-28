@@ -304,6 +304,25 @@ export default function Edit({ attributes, setAttributes }) {
 								}
 							/>
 						))}
+
+					<ToggleControl
+						label={__("Show profile pictures", "petition-names")}
+						help={__(
+							"Display gravatar images based on email addresses",
+							"petition-names",
+						)}
+						checked={showGravatars}
+						onChange={(value) => setAttributes({ showGravatars: value })}
+					/>
+
+					{showGravatars && (
+						<SelectControl
+							label={__("Select the Email Field", "petition-names")}
+							value={emailFieldId}
+							options={emailFieldOptions}
+							onChange={(value) => setAttributes({ emailFieldId: value })}
+						/>
+					)}
 				</PanelBody>
 
 				<PanelBody
@@ -344,27 +363,7 @@ export default function Edit({ attributes, setAttributes }) {
 							}
 						}}
 					/>
-					<ToggleControl
-						label={__("Show profile pictures", "petition-names")}
-						help={__(
-							"Display gravatar images based on email addresses",
-							"petition-names",
-						)}
-						checked={showGravatars}
-						onChange={(value) => setAttributes({ showGravatars: value })}
-					/>
 
-					{showGravatars && (
-						<SelectControl
-							label={__("Select the Email Field", "petition-names")}
-							value={emailFieldId}
-							options={emailFieldOptions}
-							onChange={(value) => setAttributes({ emailFieldId: value })}
-						/>
-					)}
-				</PanelBody>
-
-				<PanelBody
 					title={__("Pinned submissions", "petition-names")}
 					initialOpen={false}
 				>
