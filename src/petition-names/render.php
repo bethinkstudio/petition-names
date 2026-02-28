@@ -16,10 +16,10 @@ if ( ! class_exists( 'GFAPI' ) ) {
 	return;
 }
 
-$form_id = absint( $attributes['formId'] );
-$name_field_id = absint( $attributes['nameFieldId'] );
-$email_field_id = isset( $attributes['showGravatars'] ) && $attributes['showGravatars'] ? absint( $attributes['emailFieldId'] ) : 0;
-$column_width = isset( $attributes['columnWidth'] ) ? max( 50, min( 400, absint( $attributes['columnWidth'] ) ) ) : 125;
+$form_id          = absint( $attributes['formId'] );
+$name_field_id    = absint( $attributes['nameFieldId'] );
+$email_field_id   = isset( $attributes['showGravatars'] ) && $attributes['showGravatars'] ? absint( $attributes['emailFieldId'] ) : 0;
+$column_width     = isset( $attributes['columnWidth'] ) ? max( 50, min( 400, absint( $attributes['columnWidth'] ) ) ) : 125;
 $pinned_entry_ids = array_values(
 	array_unique(
 		array_filter(
@@ -27,9 +27,9 @@ $pinned_entry_ids = array_values(
 		)
 	)
 );
-$page = 1; // Always start with page 1 for initial load
-$per_page = isset( $attributes['itemsPerPage'] ) ? max( 20, min( 200, absint( $attributes['itemsPerPage'] ) ) ) : 60;
-$offset = 0; // Always start with offset 0
+$page             = 1; // Always start with page 1 for initial load
+$per_page         = isset( $attributes['itemsPerPage'] ) ? max( 20, min( 200, absint( $attributes['itemsPerPage'] ) ) ) : 60;
+$offset           = 0; // Always start with offset 0
 
 $search_criteria = array( 'status' => 'active' );
 if ( ! empty( $pinned_entry_ids ) ) {
@@ -41,11 +41,17 @@ if ( ! empty( $pinned_entry_ids ) ) {
 		),
 	);
 }
-$sorting = array( 'key' => 'date_created', 'direction' => 'DESC' );
-$paging = array( 'offset' => $offset, 'page_size' => $per_page );
+$sorting = array(
+	'key'       => 'date_created',
+	'direction' => 'DESC',
+);
+$paging  = array(
+	'offset'    => $offset,
+	'page_size' => $per_page,
+);
 
 $total_count = 0;
-$entries = GFAPI::get_entries( $form_id, $search_criteria, $sorting, $paging, $total_count );
+$entries     = GFAPI::get_entries( $form_id, $search_criteria, $sorting, $paging, $total_count );
 
 if ( is_wp_error( $entries ) ) {
 	echo '<div>' . esc_html__( 'Error loading entries.', 'petition-names' ) . '</div>';
@@ -62,7 +68,7 @@ echo '<div class="petition-names-list"
 ><ul class="petition-names-entries">';
 
 $rendered_entry_ids = array();
-$entries_rendered = 0;
+$entries_rendered   = 0;
 
 if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
 	foreach ( $pinned_entry_ids as $pinned_entry_id ) {
@@ -94,7 +100,7 @@ if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
 
 		echo '<li>' . $gravatar_html . esc_html( $pinned_name ) . '</li>';
 		$rendered_entry_ids[] = (int) $pinned_entry_id;
-		$entries_rendered++;
+		++$entries_rendered;
 	}
 }
 
@@ -122,7 +128,7 @@ foreach ( $entries as $entry ) {
 	}
 
 	echo '<li>' . $gravatar_html . esc_html( $display_name ) . '</li>';
-	$entries_rendered++;
+	++$entries_rendered;
 }
 echo '</ul>';
 

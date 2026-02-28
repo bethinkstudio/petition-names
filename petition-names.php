@@ -74,24 +74,24 @@ function bethink_petition_names_register_rest_routes() {
 			'callback'            => 'bethink_petition_names_rest_pagination',
 			'permission_callback' => 'bethink_petition_names_validate_public_access',
 			'args'                => array(
-				'form_id' => array(
+				'form_id'        => array(
 					'required' => true,
 					'type'     => 'integer',
 				),
-				'page' => array(
+				'page'           => array(
 					'required' => true,
 					'type'     => 'integer',
 					'minimum'  => 1,
 				),
-				'nameFieldId' => array(
+				'nameFieldId'    => array(
 					'required' => true,
 					'type'     => 'integer',
 				),
-				'emailFieldId' => array(
+				'emailFieldId'   => array(
 					'required' => false,
 					'type'     => 'integer',
 				),
-				'itemsPerPage' => array(
+				'itemsPerPage'   => array(
 					'required' => false,
 					'type'     => 'integer',
 					'minimum'  => 20,
@@ -114,8 +114,8 @@ add_action( 'rest_api_init', 'bethink_petition_names_register_rest_routes' );
  * @return bool|WP_Error
  */
 function bethink_petition_names_validate_public_access( WP_REST_Request $request ) {
-	$form_id = absint( $request['form_id'] );
-	$name_field_id = absint( $request->get_param( 'nameFieldId' ) );
+	$form_id        = absint( $request['form_id'] );
+	$name_field_id  = absint( $request->get_param( 'nameFieldId' ) );
 	$email_field_id = absint( $request->get_param( 'emailFieldId' ) );
 
 	// Get all published posts that contain petition-names blocks
@@ -161,28 +161,32 @@ function bethink_petition_names_get_published_block_configs() {
 	$cached_configs = array();
 
 	// Get all published posts/pages that might contain blocks
-	$posts = get_posts( array(
-		'post_type'      => array( 'post', 'page' ),
-		'post_status'    => 'publish',
-		'posts_per_page' => -1,
-		's'              => 'wp:bethink/petition-names', // Search for block name in content
-		'fields'         => 'ids',
-	) );
+	$posts = get_posts(
+		array(
+			'post_type'      => array( 'post', 'page' ),
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			's'              => 'wp:bethink/petition-names', // Search for block name in content
+			'fields'         => 'ids',
+		)
+	);
 
 	// Convert IDs back to post objects for processing
 	if ( ! empty( $posts ) ) {
-		$posts = get_posts( array(
-			'post_type'      => array( 'post', 'page' ),
-			'post_status'    => 'publish',
-			'post__in'       => $posts,
-			'posts_per_page' => -1,
-		) );
+		$posts = get_posts(
+			array(
+				'post_type'      => array( 'post', 'page' ),
+				'post_status'    => 'publish',
+				'post__in'       => $posts,
+				'posts_per_page' => -1,
+			)
+		);
 	}
 
 	foreach ( $posts as $post ) {
 		// Parse blocks in post content
 		if ( has_blocks( $post->post_content ) ) {
-			$blocks = parse_blocks( $post->post_content );
+			$blocks         = parse_blocks( $post->post_content );
 			$cached_configs = array_merge( $cached_configs, bethink_petition_names_extract_block_configs( $blocks ) );
 		}
 	}
@@ -240,12 +244,12 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 		return new WP_Error( 'gf_missing', __( 'Gravity Forms is not active.', 'petition-names' ), array( 'status' => 400 ) );
 	}
 
-	$form_id       = absint( $request['form_id'] );
-	$name_field_id = absint( $request->get_param( 'nameFieldId' ) );
+	$form_id        = absint( $request['form_id'] );
+	$name_field_id  = absint( $request->get_param( 'nameFieldId' ) );
 	$email_field_id = absint( $request->get_param( 'emailFieldId' ) );
-	$ids_raw       = (string) $request->get_param( 'ids' );
-	$limit         = absint( $request->get_param( 'limit' ) );
-	$page_size     = $limit > 0 ? min( 60, $limit ) : 30;
+	$ids_raw        = (string) $request->get_param( 'ids' );
+	$limit          = absint( $request->get_param( 'limit' ) );
+	$page_size      = $limit > 0 ? min( 60, $limit ) : 30;
 
 	if ( ! empty( $ids_raw ) ) {
 		$ids = array_values(
@@ -297,8 +301,14 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 		);
 	}
 
-	$sorting = array( 'key' => 'date_created', 'direction' => 'DESC' );
-	$paging  = array( 'offset' => 0, 'page_size' => $page_size );
+	$sorting = array(
+		'key'       => 'date_created',
+		'direction' => 'DESC',
+	);
+	$paging  = array(
+		'offset'    => 0,
+		'page_size' => $page_size,
+	);
 
 	$total_count = 0;
 	$entries     = GFAPI::get_entries( $form_id, $search_criteria, $sorting, $paging, $total_count );
@@ -310,7 +320,7 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 	$results = array();
 	foreach ( $entries as $entry ) {
 		$entry_id = (int) rgar( $entry, 'id' );
-		$result = array(
+		$result   = array(
 			'id'   => $entry_id,
 			'name' => bethink_petition_names_format_entry_name( $entry, $name_field_id ),
 		);
@@ -345,11 +355,11 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 		return new WP_Error( 'gf_missing', __( 'Gravity Forms is not active.', 'petition-names' ), array( 'status' => 400 ) );
 	}
 
-	$form_id = absint( $request['form_id'] );
-	$page = absint( $request['page'] );
-	$name_field_id = absint( $request->get_param( 'nameFieldId' ) );
-	$email_field_id = absint( $request->get_param( 'emailFieldId' ) );
-	$items_per_page = absint( $request->get_param( 'itemsPerPage' ) ) ?: 60;
+	$form_id          = absint( $request['form_id'] );
+	$page             = absint( $request['page'] );
+	$name_field_id    = absint( $request->get_param( 'nameFieldId' ) );
+	$email_field_id   = absint( $request->get_param( 'emailFieldId' ) );
+	$items_per_page   = absint( $request->get_param( 'itemsPerPage' ) ) ?: 60;
 	$pinned_entry_ids = (array) $request->get_param( 'pinnedEntryIds' );
 
 	// Validate parameters
@@ -387,11 +397,17 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 		);
 	}
 
-	$sorting = array( 'key' => 'date_created', 'direction' => 'DESC' );
-	$paging = array( 'offset' => $offset, 'page_size' => $items_per_page );
+	$sorting = array(
+		'key'       => 'date_created',
+		'direction' => 'DESC',
+	);
+	$paging  = array(
+		'offset'    => $offset,
+		'page_size' => $items_per_page,
+	);
 
 	$total_count = 0;
-	$entries = GFAPI::get_entries( $form_id, $search_criteria, $sorting, $paging, $total_count );
+	$entries     = GFAPI::get_entries( $form_id, $search_criteria, $sorting, $paging, $total_count );
 
 	if ( is_wp_error( $entries ) ) {
 		return new WP_Error( 'gf_entries_error', __( 'Error loading entries.', 'petition-names' ), array( 'status' => 500 ) );
@@ -462,13 +478,15 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 
 	$total_pages = ceil( $total_count / $items_per_page );
 
-	return rest_ensure_response( array(
-		'entries' => $results,
-		'pagination' => array(
-			'current_page' => $page,
-			'total_pages' => $total_pages,
-			'total_count' => $total_count,
-			'items_per_page' => $items_per_page,
-		),
-	) );
+	return rest_ensure_response(
+		array(
+			'entries'    => $results,
+			'pagination' => array(
+				'current_page'   => $page,
+				'total_pages'    => $total_pages,
+				'total_count'    => $total_count,
+				'items_per_page' => $items_per_page,
+			),
+		)
+	);
 }
