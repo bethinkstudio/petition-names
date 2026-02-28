@@ -13,7 +13,6 @@ import { __ } from "@wordpress/i18n";
  */
 import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
 import {
-	Badge,
 	Button,
 	PanelBody,
 	SelectControl,
@@ -388,11 +387,7 @@ export default function Edit({ attributes, setAttributes }) {
 									previewEntries.map((entry) => (
 										<li key={entry.id}>
 											{entry.name || `#${entry.id}`}
-											{pinnedSet.has(Number(entry.id)) && (
-												<Badge style={{ marginInlineStart: "8px" }}>
-													{__("Pinned", "petition-names")}
-												</Badge>
-											)}
+											{pinnedSet.has(Number(entry.id)) && " 📌"}
 										</li>
 									))
 								)}

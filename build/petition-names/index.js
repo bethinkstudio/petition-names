@@ -327,12 +327,7 @@ function Edit({
           children: previewEntries.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("li", {
             children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)("No entries found yet.", "petition-names")
           }) : previewEntries.map(entry => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsxs)("li", {
-            children: [entry.name || `#${entry.id}`, pinnedSet.has(Number(entry.id)) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Badge, {
-              style: {
-                marginInlineStart: "8px"
-              },
-              children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)("Pinned", "petition-names")
-            })]
+            children: [entry.name || `#${entry.id}`, pinnedSet.has(Number(entry.id)) && " 📌"]
           }, entry.id))
         })]
       })]
