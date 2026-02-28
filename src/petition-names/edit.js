@@ -18,6 +18,7 @@ import {
 	SelectControl,
 	Spinner,
 	TextControl,
+	__experimentalNumberControl as NumberControl,
 } from "@wordpress/components";
 import { useState, useEffect } from "react";
 
@@ -32,7 +33,7 @@ import "./editor.scss";
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-	const { formId, nameFieldId, pinnedEntryIds = [] } = attributes;
+	const { formId, nameFieldId, pinnedEntryIds = [], itemsPerPage = 60 } = attributes;
 	const [forms, setForms] = useState([]);
 	const [fields, setFields] = useState([]);
 	const [entrySearch, setEntrySearch] = useState("");
@@ -272,6 +273,26 @@ export default function Edit({ attributes, setAttributes }) {
 								}
 							/>
 						))}
+				</PanelBody>
+
+				<PanelBody
+					title={__("Display Settings", "petition-names")}
+					initialOpen={false}
+				>
+					<NumberControl
+						label={__("Items per page", "petition-names")}
+						help={__("Number of names to display per page (20-200, increments of 5)", "petition-names")}
+						value={itemsPerPage}
+						min={20}
+						max={200}
+						step={5}
+						onChange={(value) => {
+							const numValue = parseInt(value, 10);
+							if (!isNaN(numValue) && numValue >= 20 && numValue <= 200) {
+								setAttributes({ itemsPerPage: numValue });
+							}
+						}}
+					/>
 				</PanelBody>
 
 				<PanelBody

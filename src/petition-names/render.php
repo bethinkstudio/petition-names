@@ -26,7 +26,7 @@ $pinned_entry_ids = array_values(
     )
 );
 $page = isset( $_GET['pn_page'] ) ? max( 1, intval( $_GET['pn_page'] ) ) : 1;
-$per_page = 60;
+$per_page = isset( $attributes['itemsPerPage'] ) ? max( 20, min( 200, absint( $attributes['itemsPerPage'] ) ) ) : 60;
 $offset = ( $page - 1 ) * $per_page;
 
 $search_criteria = array( 'status' => 'active' );
