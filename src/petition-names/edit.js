@@ -34,7 +34,15 @@ import "./editor.scss";
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-	const { formId, nameFieldId, pinnedEntryIds = [], itemsPerPage = 60, columnWidth = 125, showGravatars = false, emailFieldId = "" } = attributes;
+	const {
+		formId,
+		nameFieldId,
+		pinnedEntryIds = [],
+		itemsPerPage = 60,
+		columnWidth = 125,
+		showGravatars = false,
+		emailFieldId = "",
+	} = attributes;
 	const [forms, setForms] = useState([]);
 	const [fields, setFields] = useState([]);
 	const [entrySearch, setEntrySearch] = useState("");
@@ -72,11 +80,7 @@ export default function Edit({ attributes, setAttributes }) {
 	const emailFieldOptions = [
 		{ label: __("-- Select Email Field --", "petition-names"), value: "" },
 		...fields
-			.filter(
-				(field) =>
-					field.type === "email" ||
-					field.inputType === "email",
-			)
+			.filter((field) => field.type === "email" || field.inputType === "email")
 			.map((field) => ({
 				label: field.label,
 				value: String(field.id),
@@ -135,7 +139,10 @@ export default function Edit({ attributes, setAttributes }) {
 
 		setLoadingEntrySearch(true);
 		const timeoutId = setTimeout(() => {
-			const emailParam = showGravatars && emailFieldId ? `&emailFieldId=${encodeURIComponent(emailFieldId)}` : "";
+			const emailParam =
+				showGravatars && emailFieldId
+					? `&emailFieldId=${encodeURIComponent(emailFieldId)}`
+					: "";
 			wp.apiFetch({
 				path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 					nameFieldId,
@@ -166,7 +173,10 @@ export default function Edit({ attributes, setAttributes }) {
 			return;
 		}
 
-		const emailParam = showGravatars && emailFieldId ? `&emailFieldId=${encodeURIComponent(emailFieldId)}` : "";
+		const emailParam =
+			showGravatars && emailFieldId
+				? `&emailFieldId=${encodeURIComponent(emailFieldId)}`
+				: "";
 		wp.apiFetch({
 			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 				nameFieldId,
@@ -192,7 +202,10 @@ export default function Edit({ attributes, setAttributes }) {
 		}
 
 		setLoadingPreview(true);
-		const emailParam = showGravatars && emailFieldId ? `&emailFieldId=${encodeURIComponent(emailFieldId)}` : "";
+		const emailParam =
+			showGravatars && emailFieldId
+				? `&emailFieldId=${encodeURIComponent(emailFieldId)}`
+				: "";
 		wp.apiFetch({
 			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 				nameFieldId,
@@ -299,7 +312,10 @@ export default function Edit({ attributes, setAttributes }) {
 				>
 					<NumberControl
 						label={__("Items per page", "petition-names")}
-						help={__("Number of names to display per page (20-200, increments of 5)", "petition-names")}
+						help={__(
+							"Number of names to display per page (20-200, increments of 5)",
+							"petition-names",
+						)}
 						value={itemsPerPage}
 						min={20}
 						max={200}
@@ -313,7 +329,10 @@ export default function Edit({ attributes, setAttributes }) {
 					/>
 					<NumberControl
 						label={__("Column width", "petition-names")}
-						help={__("Width of each column in pixels (50-400px)", "petition-names")}
+						help={__(
+							"Width of each column in pixels (50-400px)",
+							"petition-names",
+						)}
 						value={columnWidth}
 						min={50}
 						max={400}
@@ -325,6 +344,24 @@ export default function Edit({ attributes, setAttributes }) {
 							}
 						}}
 					/>
+					<ToggleControl
+						label={__("Show profile pictures", "petition-names")}
+						help={__(
+							"Display gravatar images based on email addresses",
+							"petition-names",
+						)}
+						checked={showGravatars}
+						onChange={(value) => setAttributes({ showGravatars: value })}
+					/>
+
+					{showGravatars && (
+						<SelectControl
+							label={__("Select the Email Field", "petition-names")}
+							value={emailFieldId}
+							options={emailFieldOptions}
+							onChange={(value) => setAttributes({ emailFieldId: value })}
+						/>
+					)}
 				</PanelBody>
 
 				<PanelBody
@@ -438,12 +475,26 @@ export default function Edit({ attributes, setAttributes }) {
 									<li>{__("No entries found yet.", "petition-names")}</li>
 								) : (
 									previewEntries.map((entry) => (
-										<li key={entry.id} style={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
+										<li
+											key={entry.id}
+											style={{
+												display: "flex",
+												alignItems: "center",
+												marginBottom: "4px",
+											}}
+										>
 											{showGravatars && entry.email && (
-												<img 
-													src={`https://www.gravatar.com/avatar/${btoa(entry.email.toLowerCase().trim())}?s=32&d=mp`}
+												<img
+													src={`https://www.gravatar.com/avatar/${btoa(
+														entry.email.toLowerCase().trim(),
+													)}?s=32&d=mp`}
 													alt=""
-													style={{ width: "1em", height: "1em", borderRadius: "50%", marginRight: "0.5em" }}
+													style={{
+														width: "1em",
+														height: "1em",
+														borderRadius: "50%",
+														marginRight: "0.5em",
+													}}
 												/>
 											)}
 											<span>
