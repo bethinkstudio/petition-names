@@ -1,0 +1,20 @@
+{
+	"name": "bethink/petition-names",
+	"description": "Development tooling for Petition Names plugin.",
+	"type": "project",
+	"license": "GPL-2.0-or-later",
+	"require": {
+        "php": ">=8.3",
+        "wp-coding-standards/wpcs": "^3",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.1"
+	},
+	"scripts": {
+		"phpcs": "phpcs --standard=phpcs.xml.dist",
+		"phpcbf": "phpcbf --standard=phpcs.xml.dist"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	}
+}
