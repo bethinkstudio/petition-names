@@ -366,8 +366,11 @@ export default function Edit({ attributes, setAttributes }) {
 							}
 						}}
 					/>
+				</PanelBody>
+				<PanelBody
 					title={__("Pinned submissions", "petition-names")}
-					initialOpen={false}>
+					initialOpen={false}
+				>
 					{!formId || !nameFieldId ? (
 						<p>
 							{__(
