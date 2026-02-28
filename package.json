@@ -11,6 +11,7 @@
 		"format:php": "composer run phpcbf",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
+		"lint:all": "composer run phpcbf && composer run phpcs",
 		"lint:php": "composer run phpcs",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",

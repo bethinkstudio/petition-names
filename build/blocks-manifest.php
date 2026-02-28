@@ -5,7 +5,7 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'bethink/petition-names',
-		'version' => '0.1.0',
+		'version' => '0.3.0',
 		'title' => 'Petition Names',
 		'category' => 'widgets',
 		'icon' => 'groups',

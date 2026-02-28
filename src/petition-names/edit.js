@@ -335,16 +335,16 @@ export default function Edit({ attributes, setAttributes }) {
 					<NumberControl
 						label={__("Items per page", "petition-names")}
 						help={__(
-							"Number of names to display per page (20-200, increments of 5)",
+							"Number of names to display per page (3-200, increments of 5)",
 							"petition-names",
 						)}
 						value={itemsPerPage}
-						min={20}
+						min={3}
 						max={200}
 						step={5}
 						onChange={(value) => {
 							const numValue = parseInt(value, 10);
-							if (!isNaN(numValue) && numValue >= 20 && numValue <= 200) {
+							if (!isNaN(numValue) && numValue >= 3 && numValue <= 200) {
 								setAttributes({ itemsPerPage: numValue });
 							}
 						}}
