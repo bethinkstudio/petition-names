@@ -5,6 +5,17 @@
  * Replace them with your own styles or remove the file completely.
  */
 
+@keyframes slideUpFadeIn {
+	0% {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 .wp-block-bethink-petition-names {
 	padding: 2px;
 
@@ -20,6 +31,9 @@
 				border-bottom: 1px solid #eee;
 				display: flex;
 				align-items: center;
+				opacity: 0;
+				transform: translateY(20px);
+				animation: slideUpFadeIn 0.6s ease-out forwards;
 
 				&:last-child {
 					border-bottom: none;
@@ -32,6 +46,23 @@
 					margin-right: 0.5em;
 					flex-shrink: 0;
 				}
+
+				// Pseudo-random animation delays using nth-child patterns
+				&:nth-child(3n+1) { animation-delay: 0.1s; }
+				&:nth-child(3n+2) { animation-delay: 0.3s; }
+				&:nth-child(3n+3) { animation-delay: 0.05s; }
+				&:nth-child(5n+1) { animation-delay: 0.2s; }
+				&:nth-child(5n+2) { animation-delay: 0.45s; }
+				&:nth-child(5n+3) { animation-delay: 0.15s; }
+				&:nth-child(5n+4) { animation-delay: 0.35s; }
+				&:nth-child(5n+5) { animation-delay: 0.4s; }
+				&:nth-child(7n+1) { animation-delay: 0.25s; }
+				&:nth-child(7n+2) { animation-delay: 0.02s; }
+				&:nth-child(7n+3) { animation-delay: 0.42s; }
+				&:nth-child(7n+4) { animation-delay: 0.18s; }
+				&:nth-child(7n+5) { animation-delay: 0.32s; }
+				&:nth-child(7n+6) { animation-delay: 0.08s; }
+				&:nth-child(7n+7) { animation-delay: 0.38s; }
 			}
 		}
 		.petition-names-pagination {
