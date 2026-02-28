@@ -1,19 +1,104 @@
 === Petition Names ===
-Contributors:      Bethink Studio
-Tags:              block
+Contributors:      Bethink Studio, georgestephanis
+Tags:              block, petition, gravity forms, names, signatures, gravatars, pagination
 Tested up to:      6.8
-Stable tag:        0.1.0
+Stable tag:        0.2.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
-A block to display a list of signatories to a petition form.
+Display a beautiful, paginated list of petition signatories from Gravity Forms with customizable layout and gravatar support.
 
 == Description ==
 
-A block to display a list of signatories to a petition form.
+Petition Names is a WordPress block that creates an elegant, responsive display of petition signatories from Gravity Forms submissions. Perfect for showing public support on petition campaigns, open letters, and community initiatives.
+
+**Key Features:**
+
+* **Seamless Gravity Forms Integration** - Connect directly to any Gravity Forms form and select name and email fields
+* **Responsive Multi-Column Layout** - Automatic column layout that adapts to screen size with customizable column widths
+* **Gravatar Profile Pictures** - Display signatory profile pictures using Gravatar service (optional)
+* **Flexible Pagination** - Configurable items per page (20-200 entries) with clean pagination controls
+* **Pinned Entries** - Highlight important signatories by pinning them to the top of the list
+* **Smooth Animations** - Elegant slide-up and fade-in animations for visual appeal
+* **Easy Block Configuration** - Intuitive settings in the WordPress Block Editor sidebar
+
+**Perfect For:**
+
+* Online petitions and campaigns
+* Open letters and statements
+* Community initiatives
+* Event supporter lists
+* Endorsement displays
+
+**Requirements:**
+
+* Gravity Forms plugin (active with REST API enabled)
+* WordPress 6.0 or higher
+* PHP 7.4 or higher
+
+== Installation ==
+
+1. Upload the plugin files to the `/wp-content/plugins/petition-names` directory, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the 'Plugins' screen in WordPress
+3. Ensure Gravity Forms is installed and activated with REST API enabled
+4. Add the "Petition Names" block to any post or page using the WordPress Block Editor
+
+== Frequently Asked Questions ==
+
+= Do I need Gravity Forms for this plugin to work? =
+
+Yes, this plugin requires Gravity Forms to be installed and activated. It connects to Gravity Forms entries via the REST API to display petition signatories.
+
+= Can I customize how many names are displayed per page? =
+
+Absolutely! You can set anywhere from 20 to 200 names per page in increments of 5. The default is 60 names per page.
+
+= How do I enable profile pictures for signatories? =
+
+Enable the "Show profile pictures" toggle in the block settings, then select an email field from your form. The plugin will automatically display Gravatar images for email addresses that have them.
+
+= Can I highlight certain signatories? =
+
+Yes! Use the "Pinned submissions" feature to search for and pin specific entries to the top of your list. Great for highlighting notable supporters or organizers.
+
+= How do I adjust the column layout? =
+
+You can customize the column width (50-400px) in the Display Settings. The number of columns automatically adjusts based on available space and your chosen width.
+
+= Will this work with any Gravity Forms field types? =
+
+The plugin works with Name fields and Text fields for displaying names, and Email fields for Gravatar integration. It's designed to work with standard petition form setups.
+
+== Screenshots ==
+
+1. **Block Settings** - Easy configuration in the WordPress Block Editor sidebar
+2. **Multi-Column Display** - Responsive layout automatically adjusts to screen size
+3. **Gravatar Integration** - Profile pictures add personality to your petition display
+4. **Pagination Controls** - Clean, accessible pagination for large lists
+5. **Pinned Entries** - Highlight important signatories at the top of your list
 
 == Changelog ==
 
+= 0.2.0 =
+* Added configurable items per page (20-200 entries, increments of 5)
+* Added adjustable column width control (50-400px, increments of 5)
+* Added Gravatar profile picture support with email field selection
+* Added pinned entries functionality with search and management
+* Added smooth slide-up and fade-in animations
+* Enhanced editor preview to match front-end appearance
+* Improved responsive multi-column layout
+* Added pagination preview in block editor
+* Improved block configuration user interface
+* Enhanced accessibility and keyboard navigation
+
 = 0.1.0 =
-* Release
+* Initial release
+* Basic petition names display from Gravity Forms
+* Simple pagination functionality
+* WordPress Block Editor integration
+
+== Upgrade Notice ==
+
+= 0.2.0 =
+Major feature release! New gravatar support, configurable display options, pinned entries, animations, and much more. Backup your site before upgrading.
 
