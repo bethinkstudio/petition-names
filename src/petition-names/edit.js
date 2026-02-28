@@ -51,6 +51,7 @@ export default function Edit({ attributes, setAttributes }) {
 	const [loadingPreview, setLoadingPreview] = useState(false);
 	const [loadingEntrySearch, setLoadingEntrySearch] = useState(false);
 	const [entryLabels, setEntryLabels] = useState({});
+	const [pinnedEntriesData, setPinnedEntriesData] = useState([]);
 	const [loadingForms, setLoadingForms] = useState(false);
 	const [loadingFields, setLoadingFields] = useState(false);
 	const [error, setError] = useState("");
@@ -183,9 +184,11 @@ export default function Edit({ attributes, setAttributes }) {
 			)}&ids=${encodeURIComponent(pinnedEntryIds.join(","))}${emailParam}`,
 		})
 			.then((data) => {
+				const pinnedData = Array.isArray(data) ? data : [];
+				setPinnedEntriesData(pinnedData);
 				setEntryLabels((current) => {
 					const next = { ...current };
-					(data || []).forEach((entry) => {
+					pinnedData.forEach((entry) => {
 						next[entry.id] = entry.name || `#${entry.id}`;
 					});
 					return next;
@@ -213,9 +216,9 @@ export default function Edit({ attributes, setAttributes }) {
 		})
 			.then((data) => {
 				const recentEntries = Array.isArray(data) ? data : [];
-				const pinnedEntries = pinnedEntryIds
-					.map((id) => ({ id, name: entryLabels[id] || `#${id}` }))
-					.filter((entry) => entry.name);
+				const pinnedEntries = pinnedEntriesData.filter((entry) =>
+					pinnedEntryIds.includes(Number(entry.id)),
+				);
 
 				const combined = [...pinnedEntries, ...recentEntries].reduce(
 					(accumulator, entry) => {
@@ -363,10 +366,8 @@ export default function Edit({ attributes, setAttributes }) {
 							}
 						}}
 					/>
-
 					title={__("Pinned submissions", "petition-names")}
-					initialOpen={false}
-				>
+					initialOpen={false}>
 					{!formId || !nameFieldId ? (
 						<p>
 							{__(
@@ -432,38 +433,50 @@ export default function Edit({ attributes, setAttributes }) {
 			</InspectorControls>
 
 			<div {...useBlockProps()}>
-				<h4>{__("Petition Names Block", "petition-names")}</h4>
 				{error && <div style={{ color: "red" }}>{error}</div>}
 				{!formId && (
 					<div>
-						{__(
-							"Select a form in the block settings sidebar.",
-							"petition-names",
+						{loadingForms ? (
+							<Spinner />
+						) : (
+							<SelectControl
+								label={__("Select a Gravity Form", "petition-names")}
+								value={formId}
+								options={formOptions}
+								onChange={(value) => {
+									setAttributes({
+										formId: value,
+										nameFieldId: "",
+										pinnedEntryIds: [],
+									});
+								}}
+							/>
 						)}
 					</div>
 				)}
 				{formId && !nameFieldId && (
 					<div>
-						{__(
-							"Select a name field in the block settings sidebar.",
-							"petition-names",
-						)}
+						{formId &&
+							(loadingFields ? (
+								<Spinner />
+							) : (
+								<SelectControl
+									label={__("Select the Name Field", "petition-names")}
+									value={nameFieldId}
+									options={nameFieldOptions}
+									onChange={(value) =>
+										setAttributes({
+											nameFieldId: value,
+											pinnedEntryIds: [],
+										})
+									}
+								/>
+							))}
 					</div>
 				)}
 				{formId && nameFieldId && (
 					<div>
-						<div style={{ color: "green", marginBottom: "8px" }}>
-							{__(
-								"Ready! This block will show a paginated list of first names and last initials from this form.",
-								"petition-names",
-							)}
-							{pinnedEntryIds.length > 0 &&
-								` ${pinnedEntryIds.length} ${__(
-									"submission(s) pinned.",
-									"petition-names",
-								)}`}
-						</div>
-						<strong>{__("Editor preview", "petition-names")}</strong>
+						<strong>{__("Editor preview:", "petition-names")}</strong>
 						{loadingPreview ? (
 							<div style={{ marginTop: "8px" }}>
 								<Spinner />
