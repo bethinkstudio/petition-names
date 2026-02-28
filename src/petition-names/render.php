@@ -95,7 +95,7 @@ if ( 1 === $current_page && ! empty( $pinned_entry_ids ) ) {
 			$email = rgar( $pinned_entry, (string) $email_field_id );
 			if ( ! empty( $email ) ) {
 				$gravatar_hash = md5( strtolower( trim( $email ) ) );
-				$gravatar_html = '<img src="https://www.gravatar.com/avatar/' . esc_attr( $gravatar_hash ) . '?s=32&amp;d=mp" alt="" class="petition-names-gravatar" /> ';
+				$gravatar_html = '<img src="https://www.gravatar.com/avatar/' . esc_attr( $gravatar_hash ) . '?s=32&amp;d=mp" alt="" class="avatar avatar-32 photo petition-names-gravatar" /> ';
 			}
 		}
 
@@ -124,7 +124,7 @@ foreach ( $entries as $entry ) {
 		$email = rgar( $entry, (string) $email_field_id );
 		if ( ! empty( $email ) ) {
 			$gravatar_hash = md5( strtolower( trim( $email ) ) );
-			$gravatar_html = '<img src="https://www.gravatar.com/avatar/' . esc_attr( $gravatar_hash ) . '?s=32&amp;d=mp" alt="" class="petition-names-gravatar" /> ';
+			$gravatar_html = '<img src="https://www.gravatar.com/avatar/' . esc_attr( $gravatar_hash ) . '?s=32&amp;d=mp" alt="" class="avatar avatar-32 photo petition-names-gravatar" /> ';
 		}
 	}
 

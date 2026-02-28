@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "bethink/petition-names",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "title": "Petition Names",
   "category": "widgets",
   "icon": "groups",

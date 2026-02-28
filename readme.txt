@@ -2,7 +2,7 @@
 Contributors:      Bethink Studio, georgestephanis
 Tags:              block, petition, gravity forms, names, signatures, gravatars, pagination
 Tested up to:      6.8
-Stable tag:        0.3.1
+Stable tag:        0.3.2
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,6 +79,12 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 
 == Changelog ==
 
+= 0.3.2 =
+* Added Jetpack/Gravatar hovercard re-initialization after asynchronous pagination updates
+* Updated gravatar image markup to use standard avatar classes for better hovercard compatibility
+* Improved asynchronous pagination handling with clearer inline error feedback during failed page loads
+* Refreshed build assets to include latest frontend pagination and hovercard integration changes
+
 = 0.3.1 =
 * Fixed REST pagination for preview, draft, and private content when viewed by logged-in editors
 * Improved pagination request compatibility by handling pinned entry IDs as array query params and robust server-side parsing
@@ -115,6 +121,9 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 * WordPress Block Editor integration
 
 == Upgrade Notice ==
+
+= 0.3.2 =
+Compatibility update improving Jetpack Gravatar hovercards for asynchronously loaded entries and refining pagination error handling.
 
 = 0.3.1 =
 Maintenance release focused on pagination reliability in preview/private contexts and clearer frontend REST error handling.

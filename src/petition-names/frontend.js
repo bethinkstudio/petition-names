@@ -111,6 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				.then((data) => {
 					// Update entries
 					updateEntries(data.entries);
+					refreshGravatarHovercards();
 
 					// Update pagination
 					updatePagination(data.pagination);
@@ -162,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				// Add gravatar if available
 				if (entry.gravatar_hash) {
-					html += `<img src="https://www.gravatar.com/avatar/${entry.gravatar_hash}?s=32&d=mp" alt="" class="petition-names-gravatar" /> `;
+					html += `<img src="https://www.gravatar.com/avatar/${entry.gravatar_hash}?s=32&d=mp" alt="" class="avatar avatar-32 photo petition-names-gravatar" /> `;
 				}
 
 				// Add name
@@ -215,6 +216,15 @@ document.addEventListener("DOMContentLoaded", function () {
 		function clearError() {
 			errorContainer.textContent = "";
 			errorContainer.hidden = true;
+		}
+
+		function refreshGravatarHovercards() {
+			if (
+				typeof window.Gravatar !== "undefined" &&
+				typeof window.Gravatar.init === "function"
+			) {
+				window.Gravatar.init("body", "#wpadminbar");
+			}
 		}
 
 		function escapeHtml(text) {
