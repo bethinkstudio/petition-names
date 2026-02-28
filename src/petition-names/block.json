@@ -39,6 +39,14 @@
 		"columnWidth": {
 			"type": "number",
 			"default": 125
+		},
+		"showGravatars": {
+			"type": "boolean",
+			"default": false
+		},
+		"emailFieldId": {
+			"type": "string",
+			"default": ""
 		}
 	}
 }

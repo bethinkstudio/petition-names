@@ -18,6 +18,7 @@ if ( ! class_exists( 'GFAPI' ) ) {
 
 $form_id = absint( $attributes['formId'] );
 $name_field_id = absint( $attributes['nameFieldId'] );
+$email_field_id = isset( $attributes['showGravatars'] ) && $attributes['showGravatars'] ? absint( $attributes['emailFieldId'] ) : 0;
 $column_width = isset( $attributes['columnWidth'] ) ? max( 50, min( 400, absint( $attributes['columnWidth'] ) ) ) : 125;
 $pinned_entry_ids = array_values(
     array_unique(

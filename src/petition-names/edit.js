@@ -18,6 +18,7 @@ import {
 	SelectControl,
 	Spinner,
 	TextControl,
+	ToggleControl,
 	__experimentalNumberControl as NumberControl,
 } from "@wordpress/components";
 import { useState, useEffect } from "react";
@@ -33,7 +34,7 @@ import "./editor.scss";
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-	const { formId, nameFieldId, pinnedEntryIds = [], itemsPerPage = 60, columnWidth = 125 } = attributes;
+	const { formId, nameFieldId, pinnedEntryIds = [], itemsPerPage = 60, columnWidth = 125, showGravatars = false, emailFieldId = "" } = attributes;
 	const [forms, setForms] = useState([]);
 	const [fields, setFields] = useState([]);
 	const [entrySearch, setEntrySearch] = useState("");
@@ -61,6 +62,20 @@ export default function Edit({ attributes, setAttributes }) {
 					field.type === "name" ||
 					field.inputType === "text" ||
 					field.inputType === "name",
+			)
+			.map((field) => ({
+				label: field.label,
+				value: String(field.id),
+			})),
+	];
+
+	const emailFieldOptions = [
+		{ label: __("-- Select Email Field --", "petition-names"), value: "" },
+		...fields
+			.filter(
+				(field) =>
+					field.type === "email" ||
+					field.inputType === "email",
 			)
 			.map((field) => ({
 				label: field.label,
@@ -120,10 +135,11 @@ export default function Edit({ attributes, setAttributes }) {
 
 		setLoadingEntrySearch(true);
 		const timeoutId = setTimeout(() => {
+			const emailParam = showGravatars && emailFieldId ? `&emailFieldId=${encodeURIComponent(emailFieldId)}` : "";
 			wp.apiFetch({
 				path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 					nameFieldId,
-				)}&search=${encodeURIComponent(entrySearch.trim())}`,
+				)}&search=${encodeURIComponent(entrySearch.trim())}${emailParam}`,
 			})
 				.then((data) => {
 					setEntryResults(Array.isArray(data) ? data : []);
@@ -143,17 +159,18 @@ export default function Edit({ attributes, setAttributes }) {
 		}, 250);
 
 		return () => clearTimeout(timeoutId);
-	}, [formId, nameFieldId, entrySearch]);
+	}, [formId, nameFieldId, entrySearch, showGravatars, emailFieldId]);
 
 	useEffect(() => {
 		if (!formId || !nameFieldId || !pinnedEntryIds.length) {
 			return;
 		}
 
+		const emailParam = showGravatars && emailFieldId ? `&emailFieldId=${encodeURIComponent(emailFieldId)}` : "";
 		wp.apiFetch({
 			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 				nameFieldId,
-			)}&ids=${encodeURIComponent(pinnedEntryIds.join(","))}`,
+			)}&ids=${encodeURIComponent(pinnedEntryIds.join(","))}${emailParam}`,
 		})
 			.then((data) => {
 				setEntryLabels((current) => {
@@ -165,7 +182,7 @@ export default function Edit({ attributes, setAttributes }) {
 				});
 			})
 			.catch(() => {});
-	}, [formId, nameFieldId, pinnedEntryIds]);
+	}, [formId, nameFieldId, pinnedEntryIds, showGravatars, emailFieldId]);
 
 	useEffect(() => {
 		if (!formId || !nameFieldId) {
@@ -175,10 +192,11 @@ export default function Edit({ attributes, setAttributes }) {
 		}
 
 		setLoadingPreview(true);
+		const emailParam = showGravatars && emailFieldId ? `&emailFieldId=${encodeURIComponent(emailFieldId)}` : "";
 		wp.apiFetch({
 			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 				nameFieldId,
-			)}&limit=10`,
+			)}&limit=10${emailParam}`,
 		})
 			.then((data) => {
 				const recentEntries = Array.isArray(data) ? data : [];
@@ -215,7 +233,7 @@ export default function Edit({ attributes, setAttributes }) {
 				setPreviewEntries([]);
 				setLoadingPreview(false);
 			});
-	}, [formId, nameFieldId, pinnedEntryIds]);
+	}, [formId, nameFieldId, pinnedEntryIds, showGravatars, emailFieldId]);
 
 	const togglePinnedEntry = (entryId) => {
 		const normalizedId = Number(entryId);
@@ -420,9 +438,18 @@ export default function Edit({ attributes, setAttributes }) {
 									<li>{__("No entries found yet.", "petition-names")}</li>
 								) : (
 									previewEntries.map((entry) => (
-										<li key={entry.id}>
-											{entry.name || `#${entry.id}`}
-											{pinnedSet.has(Number(entry.id)) && " 📌"}
+										<li key={entry.id} style={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
+											{showGravatars && entry.email && (
+												<img 
+													src={`https://www.gravatar.com/avatar/${btoa(entry.email.toLowerCase().trim())}?s=32&d=mp`}
+													alt=""
+													style={{ width: "1em", height: "1em", borderRadius: "50%", marginRight: "0.5em" }}
+												/>
+											)}
+											<span>
+												{entry.name || `#${entry.id}`}
+												{pinnedSet.has(Number(entry.id)) && " 📌"}
+											</span>
 										</li>
 									))
 								)}

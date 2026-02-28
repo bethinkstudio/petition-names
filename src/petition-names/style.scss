@@ -18,9 +18,19 @@
 			li {
 				padding: 0.25em 0;
 				border-bottom: 1px solid #eee;
+				display: flex;
+				align-items: center;
 
 				&:last-child {
 					border-bottom: none;
+				}
+
+				.petition-names-gravatar {
+					width: 1em;
+					height: 1em;
+					border-radius: 50%;
+					margin-right: 0.5em;
+					flex-shrink: 0;
 				}
 			}
 		}

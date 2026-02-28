@@ -69,6 +69,7 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 
 	$form_id       = absint( $request['form_id'] );
 	$name_field_id = absint( $request->get_param( 'nameFieldId' ) );
+	$email_field_id = absint( $request->get_param( 'emailFieldId' ) );
 	$ids_raw       = (string) $request->get_param( 'ids' );
 	$limit         = absint( $request->get_param( 'limit' ) );
 	$page_size     = $limit > 0 ? min( 60, $limit ) : 30;
@@ -89,10 +90,16 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 				continue;
 			}
 
-			$results[] = array(
+			$result = array(
 				'id'   => (int) $entry_id,
 				'name' => bethink_petition_names_format_entry_name( $entry, $name_field_id ),
 			);
+
+			if ( $email_field_id > 0 ) {
+				$result['email'] = rgar( $entry, (string) $email_field_id );
+			}
+
+			$results[] = $result;
 		}
 
 		return rest_ensure_response( $results );
@@ -130,10 +137,16 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 	$results = array();
 	foreach ( $entries as $entry ) {
 		$entry_id = (int) rgar( $entry, 'id' );
-		$results[] = array(
+		$result = array(
 			'id'   => $entry_id,
 			'name' => bethink_petition_names_format_entry_name( $entry, $name_field_id ),
 		);
+
+		if ( $email_field_id > 0 ) {
+			$result['email'] = rgar( $entry, (string) $email_field_id );
+		}
+
+		$results[] = $result;
 	}
 
 	return rest_ensure_response( $results );
