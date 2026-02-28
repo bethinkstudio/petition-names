@@ -482,11 +482,11 @@ export default function Edit({ attributes, setAttributes }) {
 								<Spinner />
 							</div>
 						) : (
-							<div 
-								className="petition-names-list" 
-								style={{ 
-									'--petition-names-column-width': `${columnWidth}px`,
-									marginTop: "8px" 
+							<div
+								className="petition-names-list"
+								style={{
+									"--petition-names-column-width": `${columnWidth}px`,
+									marginTop: "8px",
 								}}
 							>
 								<ul>
