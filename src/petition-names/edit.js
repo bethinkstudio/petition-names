@@ -482,41 +482,44 @@ export default function Edit({ attributes, setAttributes }) {
 								<Spinner />
 							</div>
 						) : (
-							<ul style={{ marginTop: "8px", paddingLeft: "20px" }}>
-								{previewEntries.length === 0 ? (
-									<li>{__("No entries found yet.", "petition-names")}</li>
-								) : (
-									previewEntries.map((entry) => (
-										<li
-											key={entry.id}
-											style={{
-												display: "flex",
-												alignItems: "center",
-												marginBottom: "4px",
-											}}
-										>
-											{showGravatars && entry.email && (
-												<img
-													src={`https://www.gravatar.com/avatar/${btoa(
-														entry.email.toLowerCase().trim(),
-													)}?s=32&d=mp`}
-													alt=""
-													style={{
-														width: "1em",
-														height: "1em",
-														borderRadius: "50%",
-														marginRight: "0.5em",
-													}}
-												/>
-											)}
-											<span>
-												{entry.name || `#${entry.id}`}
-												{pinnedSet.has(Number(entry.id)) && " 📌"}
-											</span>
-										</li>
-									))
-								)}
-							</ul>
+							<div 
+								className="petition-names-list" 
+								style={{ 
+									'--petition-names-column-width': `${columnWidth}px`,
+									marginTop: "8px" 
+								}}
+							>
+								<ul>
+									{previewEntries.length === 0 ? (
+										<li>{__("No entries found yet.", "petition-names")}</li>
+									) : (
+										previewEntries.map((entry) => (
+											<li key={entry.id}>
+												{showGravatars && entry.email && (
+													<img
+														src={`https://www.gravatar.com/avatar/${btoa(
+															entry.email.toLowerCase().trim(),
+														)}?s=32&d=mp`}
+														alt=""
+														className="avatar"
+													/>
+												)}
+												<span>
+													{entry.name || `#${entry.id}`}
+													{pinnedSet.has(Number(entry.id)) && " 📌"}
+												</span>
+											</li>
+										))
+									)}
+								</ul>
+								{/* Sample pagination preview */}
+								<div className="petition-names-pagination">
+									<span className="current">1</span>
+									<span>2</span>
+									<span>3</span>
+									<span>...</span>
+								</div>
+							</div>
 						)}
 					</div>
 				)}
