@@ -123,6 +123,15 @@
 			font-style: italic;
 		}
 
+		.petition-names-error {
+			margin: 0.5em 2em;
+			padding: 0.75em 1em;
+			border: 1px solid #cc1818;
+			background: #fff1f1;
+			color: #7a0000;
+			border-radius: 4px;
+		}
+
 		&.loading {
 			.petition-names-entries {
 				opacity: 0.5;

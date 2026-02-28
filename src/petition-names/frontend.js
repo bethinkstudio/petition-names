@@ -15,6 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
 		const loadingIndicator = listContainer.querySelector(
 			".petition-names-loading",
 		);
+		let errorContainer = listContainer.querySelector(".petition-names-error");
+
+		if (!errorContainer) {
+			errorContainer = document.createElement("div");
+			errorContainer.className = "petition-names-error";
+			errorContainer.hidden = true;
+			listContainer.insertBefore(errorContainer, entriesContainer);
+		}
 
 		if (!paginationContainer || !entriesContainer) {
 			return;
@@ -48,6 +56,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 
 		function loadPage(pageNumber) {
+			clearError();
+
 			// Show loading indicator
 			showLoading();
 
@@ -84,7 +94,17 @@ document.addEventListener("DOMContentLoaded", function () {
 			})
 				.then((response) => {
 					if (!response.ok) {
-						throw new Error(`HTTP error! status: ${response.status}`);
+						return response
+							.json()
+							.catch(() => ({}))
+							.then((errorData) => {
+								const err = new Error(
+									errorData.message || `HTTP error! status: ${response.status}`,
+								);
+								err.status = response.status;
+								err.code = errorData.code;
+								throw err;
+							});
 					}
 					return response.json();
 				})
@@ -111,8 +131,21 @@ document.addEventListener("DOMContentLoaded", function () {
 					// Re-enable buttons on error
 					buttons.forEach((btn) => (btn.disabled = false));
 
-					// Show error message (you could make this more user-friendly)
-					alert("Error loading page. Please try again.");
+					if (error.status === 403 || error.code === "forbidden_access") {
+						showError(
+							"This list is not publicly paginable in its current state. Publish the page or view while logged in with editing permissions.",
+						);
+						return;
+					}
+
+					if (error.status === 400 || error.code === "rest_invalid_param") {
+						showError(
+							"Unable to load this page due to an invalid pagination request. Please refresh and try again.",
+						);
+						return;
+					}
+
+					showError("Error loading page. Please try again.");
 				});
 		}
 
@@ -172,6 +205,16 @@ document.addEventListener("DOMContentLoaded", function () {
 				loadingIndicator.style.display = "none";
 			}
 			entriesContainer.style.opacity = "1";
+		}
+
+		function showError(message) {
+			errorContainer.textContent = message;
+			errorContainer.hidden = false;
+		}
+
+		function clearError() {
+			errorContainer.textContent = "";
+			errorContainer.hidden = true;
 		}
 
 		function escapeHtml(text) {

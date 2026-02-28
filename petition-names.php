@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Petition Names
  * Description:       A block to display a list of names from a Gravity Forms petition.
- * Version:           0.3.0
+ * Version:           0.3.1
  * Requires at least: 6.8
  * Requires PHP:      7.4
  * Author:            Bethink Studio, George Stephanis

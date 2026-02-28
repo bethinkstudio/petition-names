@@ -2,7 +2,7 @@
 Contributors:      Bethink Studio, georgestephanis
 Tags:              block, petition, gravity forms, names, signatures, gravatars, pagination
 Tested up to:      6.8
-Stable tag:        0.3.0
+Stable tag:        0.3.1
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ Petition Names is a WordPress block that creates an elegant, responsive display 
 * **Seamless Gravity Forms Integration** - Connect directly to any Gravity Forms form and select name and email fields
 * **Responsive Multi-Column Layout** - Automatic column layout that adapts to screen size with customizable column widths
 * **Gravatar Profile Pictures** - Display signatory profile pictures using Gravatar service (optional)
-* **Flexible Pagination** - Configurable items per page (20-200 entries) with clean pagination controls
+* **Flexible Pagination** - Configurable items per page (3-200 entries) with clean pagination controls
 * **Pinned Entries** - Highlight important signatories by pinning them to the top of the list
 * **Smooth Animations** - Elegant slide-up and fade-in animations for visual appeal
 * **Easy Block Configuration** - Intuitive settings in the WordPress Block Editor sidebar
@@ -51,7 +51,7 @@ Yes, this plugin requires Gravity Forms to be installed and activated. It connec
 
 = Can I customize how many names are displayed per page? =
 
-Absolutely! You can set anywhere from 20 to 200 names per page in increments of 5. The default is 60 names per page.
+Absolutely! You can set anywhere from 3 to 200 names per page in increments of 5. The default is 60 names per page.
 
 = How do I enable profile pictures for signatories? =
 
@@ -78,6 +78,13 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 5. **Pinned Entries** - Highlight important signatories at the top of your list
 
 == Changelog ==
+
+= 0.3.1 =
+* Fixed REST pagination for preview, draft, and private content when viewed by logged-in editors
+* Improved pagination request compatibility by handling pinned entry IDs as array query params and robust server-side parsing
+* Replaced pagination alert popups with inline, contextual error messaging for 403 and 400 failures
+* Updated editor-side items-per-page minimum to 3 for consistency with frontend and REST validation
+* Refreshed build assets after frontend pagination error handling updates
 
 = 0.3.0 =
 * Hardened public REST pagination endpoint access to only published block configurations
@@ -108,6 +115,9 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 * WordPress Block Editor integration
 
 == Upgrade Notice ==
+
+= 0.3.1 =
+Maintenance release focused on pagination reliability in preview/private contexts and clearer frontend REST error handling.
 
 = 0.3.0 =
 Security and quality update: tightens REST data exposure controls, improves pinned-pagination correctness, and adds WPCS-based linting/formatting workflows.
