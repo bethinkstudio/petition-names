@@ -70,7 +70,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 
 			if (config.pinnedEntries.length > 0) {
-				params.append("pinnedEntryIds", JSON.stringify(config.pinnedEntries));
+				config.pinnedEntries.forEach((entryId) => {
+					params.append("pinnedEntryIds[]", String(entryId));
+				});
 			}
 
 			// Make API request

@@ -119,6 +119,11 @@ add_action( 'rest_api_init', 'bethink_petition_names_register_rest_routes' );
  * @return bool|WP_Error
  */
 function bethink_petition_names_validate_public_access( WP_REST_Request $request ) {
+	// Allow editors/authors to paginate preview, draft, or private content.
+	if ( current_user_can( 'edit_posts' ) ) {
+		return true;
+	}
+
 	$form_id        = absint( $request['form_id'] );
 	$name_field_id  = absint( $request->get_param( 'nameFieldId' ) );
 	$email_field_id = absint( $request->get_param( 'emailFieldId' ) );
@@ -365,7 +370,7 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 	$name_field_id    = absint( $request->get_param( 'nameFieldId' ) );
 	$email_field_id   = absint( $request->get_param( 'emailFieldId' ) );
 	$items_per_page   = absint( $request->get_param( 'itemsPerPage' ) );
-	$pinned_entry_ids = (array) $request->get_param( 'pinnedEntryIds' );
+	$pinned_entry_ids = $request->get_param( 'pinnedEntryIds' );
 	if ( $items_per_page <= 0 ) {
 		$items_per_page = 60;
 	}
@@ -376,6 +381,19 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 	}
 
 	// Sanitize pinned entry IDs.
+	if ( is_string( $pinned_entry_ids ) ) {
+		$decoded = json_decode( $pinned_entry_ids, true );
+		if ( is_array( $decoded ) ) {
+			$pinned_entry_ids = $decoded;
+		} else {
+			$pinned_entry_ids = array( $pinned_entry_ids );
+		}
+	}
+
+	if ( ! is_array( $pinned_entry_ids ) ) {
+		$pinned_entry_ids = array();
+	}
+
 	$pinned_entry_ids = array_values(
 		array_unique(
 			array_filter(
