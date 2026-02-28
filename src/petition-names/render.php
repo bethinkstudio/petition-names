@@ -27,9 +27,9 @@ $pinned_entry_ids = array_values(
 		)
 	)
 );
-$page = isset( $_GET['pn_page'] ) ? max( 1, intval( $_GET['pn_page'] ) ) : 1;
+$page = 1; // Always start with page 1 for initial load
 $per_page = isset( $attributes['itemsPerPage'] ) ? max( 20, min( 200, absint( $attributes['itemsPerPage'] ) ) ) : 60;
-$offset = ( $page - 1 ) * $per_page;
+$offset = 0; // Always start with offset 0
 
 $search_criteria = array( 'status' => 'active' );
 if ( ! empty( $pinned_entry_ids ) ) {
@@ -52,7 +52,14 @@ if ( is_wp_error( $entries ) ) {
 	return;
 }
 
-echo '<div class="petition-names-list" style="--petition-names-column-width: ' . esc_attr( $column_width ) . 'px;"><ul>';
+echo '<div class="petition-names-list"
+	style="--petition-names-column-width: ' . esc_attr( $column_width ) . 'px;"
+	data-form-id="' . esc_attr( $form_id ) . '"
+	data-name-field-id="' . esc_attr( $name_field_id ) . '"
+	data-email-field-id="' . esc_attr( $email_field_id ) . '"
+	data-items-per-page="' . esc_attr( $per_page ) . '"
+	data-pinned-entries="' . esc_attr( wp_json_encode( $pinned_entry_ids ) ) . '"
+><ul class="petition-names-entries">';
 
 $rendered_entry_ids = array();
 
@@ -71,10 +78,16 @@ if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
 			? bethink_petition_names_format_entry_name( $pinned_entry, $name_field_id )
 			: trim( rgar( $pinned_entry, "{$name_field_id}.3" ) . ' ' . rgar( $pinned_entry, "{$name_field_id}.6" ) );
 
-		$email = rgar( $pinned_entry, (string) $email_field_id );
-		$gravatar = $email_field_id > 0 && ! empty( $email ) ? get_avatar( $email ) : '';
+		$gravatar_html = '';
+		if ( $email_field_id > 0 ) {
+			$email = rgar( $pinned_entry, (string) $email_field_id );
+			if ( ! empty( $email ) ) {
+				$gravatar_hash = md5( strtolower( trim( $email ) ) );
+				$gravatar_html = '<img src="https://www.gravatar.com/avatar/' . esc_attr( $gravatar_hash ) . '?s=32&amp;d=mp" alt="" class="petition-names-gravatar" /> ';
+			}
+		}
 
-		echo '<li>' . $gravatar . esc_html( $pinned_name ) . '</li>';
+		echo '<li>' . $gravatar_html . esc_html( $pinned_name ) . '</li>';
 		$rendered_entry_ids[] = (int) $pinned_entry_id;
 	}
 }
@@ -89,21 +102,32 @@ foreach ( $entries as $entry ) {
 		? bethink_petition_names_format_entry_name( $entry, $name_field_id )
 		: trim( rgar( $entry, "{$name_field_id}.3" ) . ' ' . rgar( $entry, "{$name_field_id}.6" ) );
 
-	$email = rgar( $entry, (string) $email_field_id );
-	$gravatar = $email_field_id > 0 && ! empty( $email ) ? get_avatar( $email ) : '';
+	$gravatar_html = '';
+	if ( $email_field_id > 0 ) {
+		$email = rgar( $entry, (string) $email_field_id );
+		if ( ! empty( $email ) ) {
+			$gravatar_hash = md5( strtolower( trim( $email ) ) );
+			$gravatar_html = '<img src="https://www.gravatar.com/avatar/' . esc_attr( $gravatar_hash ) . '?s=32&amp;d=mp" alt="" class="petition-names-gravatar" /> ';
+		}
+	}
 
-	echo '<li>' . $gravatar . esc_html( $display_name ) . '</li>';
+	echo '<li>' . $gravatar_html . esc_html( $display_name ) . '</li>';
 }
 echo '</ul>';
 
+// Loading indicator for async pagination
+echo '<div class="petition-names-loading" style="display: none; text-align: center; padding: 1em;">';
+echo '<span>' . esc_html__( 'Loading...', 'petition-names' ) . '</span>';
+echo '</div>';
+
 $total_pages = ceil( $total_count / $per_page );
 if ( 1 < $total_pages ) {
-	echo '<div class="petition-names-pagination">';
+	echo '<div class="petition-names-pagination" data-current-page="1" data-total-pages="' . esc_attr( $total_pages ) . '">';
 	for ( $i = 1; $i <= $total_pages; $i++ ) {
-		if ( $i === $page ) {
-			echo '<span class="current">' . esc_html( $i ) . '</span> ';
+		if ( 1 === $i ) {
+			echo '<button class="petition-page-btn current" data-page="' . esc_attr( $i ) . '" disabled>' . esc_html( $i ) . '</button> ';
 		} else {
-			echo '<a href="' . esc_url( add_query_arg( 'pn_page', $i ) ) . '">' . esc_html( $i ) . '</a> ';
+			echo '<button class="petition-page-btn" data-page="' . esc_attr( $i ) . '">' . esc_html( $i ) . '</button> ';
 		}
 	}
 	echo '</div>'; // .petition-names-pagination

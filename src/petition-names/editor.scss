@@ -41,11 +41,15 @@
             gap: 0.5em;
             padding: 0 2em;
 
+            button,
             span {
                 border: 1px solid #ccc;
                 border-radius: 3px;
                 text-decoration: none;
                 color: #333;
+                background: #fff;
+                cursor: pointer;
+                font-family: inherit;
                 box-sizing: border-box;
                 text-align: center;
                 width: 3em;

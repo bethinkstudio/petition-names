@@ -72,6 +72,7 @@
 			flex-wrap: wrap;
 			gap: 0.5em;
 
+			button.petition-page-btn,
 			span,
 			a {
 				border: 1px solid #ccc;
@@ -79,6 +80,11 @@
 				text-decoration: none;
 				color: #333;
 				margin-inline: 0.25em;
+				background: #fff;
+				cursor: pointer;
+				font-family: inherit;
+				font-size: inherit;
+				transition: all 0.2s ease;
 
 				box-sizing: border-box;
 				text-align: center;
@@ -86,11 +92,40 @@
 				display: inline-block;
 				padding: 0.25em 0;
 
+				&:hover:not(:disabled) {
+					background-color: #f0f0f0;
+					border-color: #999;
+				}
+
+				&:disabled {
+					cursor: not-allowed;
+					opacity: 0.6;
+				}
 			}
+
+			button.petition-page-btn.current,
 			.current {
 				background-color: var(--wp--preset--color--primary, #0073aa);
 				color: #fff;
 				border-color: var(--wp--preset--color--primary, #0073aa);
+
+				&:hover {
+					background-color: var(--wp--preset--color--primary, #0073aa);
+				}
+			}
+		}
+
+		.petition-names-loading {
+			padding: 1em;
+			text-align: center;
+			color: #666;
+			font-style: italic;
+		}
+
+		&.loading {
+			.petition-names-entries {
+				opacity: 0.5;
+				transition: opacity 0.3s ease;
 			}
 		}
 	}
