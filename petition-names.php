@@ -18,10 +18,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+/**
+ * Register plugin blocks and frontend localization.
+ *
+ * @return void
+ */
 function bethink_petition_names_block_init() {
 	wp_register_block_types_from_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
 
-	// Localize REST API settings for frontend script
+	// Localize REST API settings for frontend script.
 	wp_localize_script(
 		'bethink-petition-names-view-script',
 		'wpApiSettings',
@@ -52,7 +57,7 @@ function bethink_petition_names_format_entry_name( $entry, $name_field_id ) {
  * Register REST route for searching entries in a selected form.
  */
 function bethink_petition_names_register_rest_routes() {
-	// Editor endpoint (requires edit_posts permission)
+	// Editor endpoint (requires edit_posts permission).
 	register_rest_route(
 		'petition-names/v1',
 		'/forms/(?P<form_id>\\d+)/entries',
@@ -65,7 +70,7 @@ function bethink_petition_names_register_rest_routes() {
 		)
 	);
 
-	// Frontend pagination endpoint (restricted to published blocks)
+	// Frontend pagination endpoint (restricted to published blocks).
 	register_rest_route(
 		'petition-names/v1',
 		'/forms/(?P<form_id>\\d+)/entries/page/(?P<page>\\d+)',
@@ -94,7 +99,7 @@ function bethink_petition_names_register_rest_routes() {
 				'itemsPerPage'   => array(
 					'required' => false,
 					'type'     => 'integer',
-					'minimum'  => 20,
+					'minimum'  => 3,
 					'maximum'  => 200,
 				),
 				'pinnedEntryIds' => array(
@@ -118,10 +123,10 @@ function bethink_petition_names_validate_public_access( WP_REST_Request $request
 	$name_field_id  = absint( $request->get_param( 'nameFieldId' ) );
 	$email_field_id = absint( $request->get_param( 'emailFieldId' ) );
 
-	// Get all published posts that contain petition-names blocks
+	// Get all published posts that contain petition-names blocks.
 	$allowed_configs = bethink_petition_names_get_published_block_configs();
 
-	// Check if this configuration is allowed
+	// Check if this configuration is allowed.
 	foreach ( $allowed_configs as $config ) {
 		if (
 			(int) $config['formId'] === $form_id &&
@@ -147,12 +152,12 @@ function bethink_petition_names_validate_public_access( WP_REST_Request $request
 function bethink_petition_names_get_published_block_configs() {
 	static $cached_configs = null;
 
-	// Use caching to avoid repeated database queries
+	// Use caching to avoid repeated database queries.
 	if ( null !== $cached_configs ) {
 		return $cached_configs;
 	}
 
-	// Check if we have a cached version in options
+	// Check if we have a cached version in options.
 	$cached_configs = get_option( 'petition_names_allowed_configs', array() );
 	if ( ! empty( $cached_configs ) ) {
 		return $cached_configs;
@@ -160,18 +165,18 @@ function bethink_petition_names_get_published_block_configs() {
 
 	$cached_configs = array();
 
-	// Get all published posts/pages that might contain blocks
+	// Get all published posts/pages that might contain blocks.
 	$posts = get_posts(
 		array(
 			'post_type'      => array( 'post', 'page' ),
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
-			's'              => 'wp:bethink/petition-names', // Search for block name in content
+			's'              => 'wp:bethink/petition-names', // Search for block name in content.
 			'fields'         => 'ids',
 		)
 	);
 
-	// Convert IDs back to post objects for processing
+	// Convert IDs back to post objects for processing.
 	if ( ! empty( $posts ) ) {
 		$posts = get_posts(
 			array(
@@ -184,17 +189,17 @@ function bethink_petition_names_get_published_block_configs() {
 	}
 
 	foreach ( $posts as $post ) {
-		// Parse blocks in post content
+		// Parse blocks in post content.
 		if ( has_blocks( $post->post_content ) ) {
 			$blocks         = parse_blocks( $post->post_content );
 			$cached_configs = array_merge( $cached_configs, bethink_petition_names_extract_block_configs( $blocks ) );
 		}
 	}
 
-	// Allow developers to filter the allowed configurations
+	// Allow developers to filter the allowed configurations.
 	$cached_configs = apply_filters( 'petition_names_allowed_configs', $cached_configs );
 
-	// Cache in options for persistence
+	// Cache in options for persistence.
 	update_option( 'petition_names_allowed_configs', $cached_configs, false );
 
 	return $cached_configs;
@@ -210,11 +215,11 @@ function bethink_petition_names_extract_block_configs( $blocks ) {
 	$configs = array();
 
 	foreach ( $blocks as $block ) {
-		// Check if this is a petition-names block
+		// Check if this is a petition-names block.
 		if ( 'bethink/petition-names' === $block['blockName'] && ! empty( $block['attrs'] ) ) {
 			$attrs = $block['attrs'];
 
-			// Only include blocks with required configuration
+			// Only include blocks with required configuration.
 			if ( ! empty( $attrs['formId'] ) && ! empty( $attrs['nameFieldId'] ) ) {
 				$configs[] = array(
 					'formId'       => $attrs['formId'],
@@ -224,7 +229,7 @@ function bethink_petition_names_extract_block_configs( $blocks ) {
 			}
 		}
 
-		// Recursively check inner blocks
+		// Recursively check inner blocks.
 		if ( ! empty( $block['innerBlocks'] ) ) {
 			$configs = array_merge( $configs, bethink_petition_names_extract_block_configs( $block['innerBlocks'] ) );
 		}
@@ -359,15 +364,18 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 	$page             = absint( $request['page'] );
 	$name_field_id    = absint( $request->get_param( 'nameFieldId' ) );
 	$email_field_id   = absint( $request->get_param( 'emailFieldId' ) );
-	$items_per_page   = absint( $request->get_param( 'itemsPerPage' ) ) ?: 60;
+	$items_per_page   = absint( $request->get_param( 'itemsPerPage' ) );
 	$pinned_entry_ids = (array) $request->get_param( 'pinnedEntryIds' );
+	if ( $items_per_page <= 0 ) {
+		$items_per_page = 60;
+	}
 
-	// Validate parameters
+	// Validate parameters.
 	if ( $form_id <= 0 || $page <= 0 || $name_field_id <= 0 ) {
 		return new WP_Error( 'invalid_params', __( 'Invalid parameters provided.', 'petition-names' ), array( 'status' => 400 ) );
 	}
 
-	// Sanitize pinned entry IDs
+	// Sanitize pinned entry IDs.
 	$pinned_entry_ids = array_values(
 		array_unique(
 			array_filter(
@@ -376,16 +384,16 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 		)
 	);
 
-	$items_per_page = max( 20, min( 200, $items_per_page ) );
+	$items_per_page = max( 3, min( 200, $items_per_page ) );
 
-	// Calculate offset accounting for pinned entries displacing regular entries on page 1
+	// Calculate offset accounting for pinned entries displacing regular entries on page 1.
 	$offset = ( $page - 1 ) * $items_per_page;
 	if ( $page > 1 && ! empty( $pinned_entry_ids ) ) {
-		// Reduce offset by number of pinned entries that took up space on page 1
+		// Reduce offset by number of pinned entries that took up space on page 1.
 		$offset -= count( $pinned_entry_ids );
 	}
 
-	// Build search criteria (exclude pinned entries from pagination)
+	// Build search criteria (exclude pinned entries from pagination).
 	$search_criteria = array( 'status' => 'active' );
 	if ( ! empty( $pinned_entry_ids ) ) {
 		$search_criteria['field_filters'] = array(
@@ -415,11 +423,11 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 
 	$results = array();
 
-	// If this is page 1, add pinned entries first
+	// If this is page 1, add pinned entries first.
 	if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
 		foreach ( $pinned_entry_ids as $pinned_entry_id ) {
 			if ( count( $results ) >= $items_per_page ) {
-				break; // Don't exceed page limit
+				break; // Don't exceed page limit.
 			}
 
 			$pinned_entry = GFAPI::get_entry( $pinned_entry_id );
@@ -447,15 +455,15 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 		}
 	}
 
-	// Add regular entries
+	// Add regular entries.
 	foreach ( $entries as $entry ) {
 		if ( count( $results ) >= $items_per_page ) {
-			break; // Don't exceed page limit
+			break; // Don't exceed page limit.
 		}
 
 		$entry_id = (int) rgar( $entry, 'id' );
 
-		// Skip if this entry is already included as a pinned entry
+		// Skip if this entry is already included as a pinned entry.
 		$existing_ids = array_column( $results, 'id' );
 		if ( in_array( $entry_id, $existing_ids, true ) ) {
 			continue;

@@ -1,8 +1,9 @@
 <?php
 /**
  * Server-side rendering for the Petition Names block.
+ *
+ * @package PetitionNames
  */
-
 
 echo '<div ' . wp_kses_data( get_block_wrapper_attributes() ) . '>';
 
@@ -27,9 +28,9 @@ $pinned_entry_ids = array_values(
 		)
 	)
 );
-$page             = 1; // Always start with page 1 for initial load
-$per_page         = isset( $attributes['itemsPerPage'] ) ? max( 20, min( 200, absint( $attributes['itemsPerPage'] ) ) ) : 60;
-$offset           = 0; // Always start with offset 0
+$current_page     = 1; // Always start with page 1 for initial load.
+$items_per_page   = isset( $attributes['itemsPerPage'] ) ? max( 20, min( 200, absint( $attributes['itemsPerPage'] ) ) ) : 60;
+$offset           = 0; // Always start with offset 0.
 
 $search_criteria = array( 'status' => 'active' );
 if ( ! empty( $pinned_entry_ids ) ) {
@@ -47,7 +48,7 @@ $sorting = array(
 );
 $paging  = array(
 	'offset'    => $offset,
-	'page_size' => $per_page,
+	'page_size' => $items_per_page,
 );
 
 $total_count = 0;
@@ -63,17 +64,17 @@ echo '<div class="petition-names-list"
 	data-form-id="' . esc_attr( $form_id ) . '"
 	data-name-field-id="' . esc_attr( $name_field_id ) . '"
 	data-email-field-id="' . esc_attr( $email_field_id ) . '"
-	data-items-per-page="' . esc_attr( $per_page ) . '"
+	data-items-per-page="' . esc_attr( $items_per_page ) . '"
 	data-pinned-entries="' . esc_attr( wp_json_encode( $pinned_entry_ids ) ) . '"
 ><ul class="petition-names-entries">';
 
 $rendered_entry_ids = array();
 $entries_rendered   = 0;
 
-if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
+if ( 1 === $current_page && ! empty( $pinned_entry_ids ) ) {
 	foreach ( $pinned_entry_ids as $pinned_entry_id ) {
-		if ( $entries_rendered >= $per_page ) {
-			break; // Don't exceed page limit
+		if ( $entries_rendered >= $items_per_page ) {
+			break; // Don't exceed page limit.
 		}
 
 		$pinned_entry = GFAPI::get_entry( $pinned_entry_id );
@@ -98,15 +99,15 @@ if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
 			}
 		}
 
-		echo '<li>' . $gravatar_html . esc_html( $pinned_name ) . '</li>';
+		echo '<li>' . wp_kses_post( $gravatar_html ) . esc_html( $pinned_name ) . '</li>';
 		$rendered_entry_ids[] = (int) $pinned_entry_id;
 		++$entries_rendered;
 	}
 }
 
 foreach ( $entries as $entry ) {
-	if ( $entries_rendered >= $per_page ) {
-		break; // Don't exceed page limit
+	if ( $entries_rendered >= $items_per_page ) {
+		break; // Don't exceed page limit.
 	}
 
 	$entry_id = (int) rgar( $entry, 'id' );
@@ -127,17 +128,17 @@ foreach ( $entries as $entry ) {
 		}
 	}
 
-	echo '<li>' . $gravatar_html . esc_html( $display_name ) . '</li>';
+	echo '<li>' . wp_kses_post( $gravatar_html ) . esc_html( $display_name ) . '</li>';
 	++$entries_rendered;
 }
 echo '</ul>';
 
-// Loading indicator for async pagination
+// Loading indicator for async pagination.
 echo '<div class="petition-names-loading" style="display: none; text-align: center; padding: 1em;">';
 echo '<span>' . esc_html__( 'Loading...', 'petition-names' ) . '</span>';
 echo '</div>';
 
-$total_pages = ceil( $total_count / $per_page );
+$total_pages = ceil( $total_count / $items_per_page );
 if ( 1 < $total_pages ) {
 	echo '<div class="petition-names-pagination" data-current-page="1" data-total-pages="' . esc_attr( $total_pages ) . '">';
 	for ( $i = 1; $i <= $total_pages; $i++ ) {
@@ -147,8 +148,8 @@ if ( 1 < $total_pages ) {
 			echo '<button class="petition-page-btn" data-page="' . esc_attr( $i ) . '">' . esc_html( $i ) . '</button> ';
 		}
 	}
-	echo '</div>'; // .petition-names-pagination
+	echo '</div>'; // .petition-names-pagination.
 }
-echo '</div>'; // .petition-names-list
+echo '</div>'; // .petition-names-list.
 
-echo '</div>'; // .wp-block-petition-names
+echo '</div>'; // .wp-block-petition-names.
