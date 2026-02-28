@@ -423,7 +423,6 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 			if ( $email_field_id > 0 ) {
 				$email = rgar( $pinned_entry, (string) $email_field_id );
 				if ( ! empty( $email ) ) {
-					$result['email'] = $email;
 					$result['gravatar_hash'] = md5( strtolower( trim( $email ) ) );
 				}
 			}
@@ -454,7 +453,6 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 		if ( $email_field_id > 0 ) {
 			$email = rgar( $entry, (string) $email_field_id );
 			if ( ! empty( $email ) ) {
-				$result['email'] = $email;
 				$result['gravatar_hash'] = md5( strtolower( trim( $email ) ) );
 			}
 		}
