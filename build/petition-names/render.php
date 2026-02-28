@@ -62,9 +62,14 @@ echo '<div class="petition-names-list"
 ><ul class="petition-names-entries">';
 
 $rendered_entry_ids = array();
+$entries_rendered = 0;
 
 if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
 	foreach ( $pinned_entry_ids as $pinned_entry_id ) {
+		if ( $entries_rendered >= $per_page ) {
+			break; // Don't exceed page limit
+		}
+
 		$pinned_entry = GFAPI::get_entry( $pinned_entry_id );
 		if (
 			is_wp_error( $pinned_entry ) ||
@@ -89,10 +94,15 @@ if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
 
 		echo '<li>' . $gravatar_html . esc_html( $pinned_name ) . '</li>';
 		$rendered_entry_ids[] = (int) $pinned_entry_id;
+		$entries_rendered++;
 	}
 }
 
 foreach ( $entries as $entry ) {
+	if ( $entries_rendered >= $per_page ) {
+		break; // Don't exceed page limit
+	}
+
 	$entry_id = (int) rgar( $entry, 'id' );
 	if ( in_array( $entry_id, $rendered_entry_ids, true ) ) {
 		continue;
@@ -112,6 +122,7 @@ foreach ( $entries as $entry ) {
 	}
 
 	echo '<li>' . $gravatar_html . esc_html( $display_name ) . '</li>';
+	$entries_rendered++;
 }
 echo '</ul>';
 

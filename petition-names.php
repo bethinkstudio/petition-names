@@ -367,7 +367,13 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 	);
 
 	$items_per_page = max( 20, min( 200, $items_per_page ) );
+
+	// Calculate offset accounting for pinned entries displacing regular entries on page 1
 	$offset = ( $page - 1 ) * $items_per_page;
+	if ( $page > 1 && ! empty( $pinned_entry_ids ) ) {
+		// Reduce offset by number of pinned entries that took up space on page 1
+		$offset -= count( $pinned_entry_ids );
+	}
 
 	// Build search criteria (exclude pinned entries from pagination)
 	$search_criteria = array( 'status' => 'active' );
@@ -396,6 +402,10 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 	// If this is page 1, add pinned entries first
 	if ( 1 === $page && ! empty( $pinned_entry_ids ) ) {
 		foreach ( $pinned_entry_ids as $pinned_entry_id ) {
+			if ( count( $results ) >= $items_per_page ) {
+				break; // Don't exceed page limit
+			}
+
 			$pinned_entry = GFAPI::get_entry( $pinned_entry_id );
 			if (
 				is_wp_error( $pinned_entry ) ||
@@ -424,6 +434,10 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 
 	// Add regular entries
 	foreach ( $entries as $entry ) {
+		if ( count( $results ) >= $items_per_page ) {
+			break; // Don't exceed page limit
+		}
+
 		$entry_id = (int) rgar( $entry, 'id' );
 
 		// Skip if this entry is already included as a pinned entry

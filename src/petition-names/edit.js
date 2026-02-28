@@ -212,7 +212,7 @@ export default function Edit({ attributes, setAttributes }) {
 		wp.apiFetch({
 			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 				nameFieldId,
-			)}&limit=10${emailParam}`,
+			)}&limit=${itemsPerPage}${emailParam}`,
 		})
 			.then((data) => {
 				const recentEntries = Array.isArray(data) ? data : [];
@@ -235,7 +235,7 @@ export default function Edit({ attributes, setAttributes }) {
 					[],
 				);
 
-				setPreviewEntries(combined.slice(0, 10));
+				setPreviewEntries(combined.slice(0, itemsPerPage));
 				setEntryLabels((current) => {
 					const next = { ...current };
 					recentEntries.forEach((entry) => {
