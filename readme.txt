@@ -2,7 +2,7 @@
 Contributors:      Bethink Studio, georgestephanis
 Tags:              block, petition, gravity forms, names, signatures, gravatars, pagination
 Tested up to:      6.8
-Stable tag:        0.3.2
+Stable tag:        0.3.3
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,6 +79,13 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 
 == Changelog ==
 
+= 0.3.3 =
+* Added a new block setting to enable or disable signatory display animations
+* Added a server-rendered no-animation mode so animation preference is respected on the frontend
+* Enhanced editor UX by consolidating key controls in sidebar panels (Data source, Display Settings, Pinned submissions)
+* Improved editor preview behavior for pinned signatories and replaced the pinned indicator with an emoji marker (`📌`) for compatibility
+* Refreshed build artifacts for updated block settings and rendering behavior
+
 = 0.3.2 =
 * Added Jetpack/Gravatar hovercard re-initialization after asynchronous pagination updates
 * Updated gravatar image markup to use standard avatar classes for better hovercard compatibility
@@ -121,6 +128,9 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 * WordPress Block Editor integration
 
 == Upgrade Notice ==
+
+= 0.3.3 =
+Feature update adding an animation on/off toggle and improving editor-side preview and settings workflow.
 
 = 0.3.2 =
 Compatibility update improving Jetpack Gravatar hovercards for asynchronously loaded entries and refining pagination error handling.
