@@ -20,6 +20,13 @@
 	padding: 2px;
 
 	.petition-names-list {
+		&.no-animations {
+			> ul li {
+				opacity: 1;
+				transform: none;
+				animation: none;
+			}
+		}
 
 		> ul {
 			list-style: none;

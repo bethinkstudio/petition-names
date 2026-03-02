@@ -41,6 +41,10 @@
 			"type": "number",
 			"default": 125
 		},
+		"showAnimations": {
+			"type": "boolean",
+			"default": true
+		},
 		"showGravatars": {
 			"type": "boolean",
 			"default": false

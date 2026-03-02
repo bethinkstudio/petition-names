@@ -48,6 +48,10 @@ return array(
 				'type' => 'number',
 				'default' => 125
 			),
+			'showAnimations' => array(
+				'type' => 'boolean',
+				'default' => true
+			),
 			'showGravatars' => array(
 				'type' => 'boolean',
 				'default' => false

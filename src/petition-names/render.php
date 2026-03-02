@@ -19,6 +19,7 @@ if ( ! class_exists( 'GFAPI' ) ) {
 
 $form_id          = absint( $attributes['formId'] );
 $name_field_id    = absint( $attributes['nameFieldId'] );
+$show_animations  = ! isset( $attributes['showAnimations'] ) || ! empty( $attributes['showAnimations'] );
 $email_field_id   = isset( $attributes['showGravatars'] ) && $attributes['showGravatars'] ? absint( $attributes['emailFieldId'] ) : 0;
 $column_width     = isset( $attributes['columnWidth'] ) ? max( 50, min( 400, absint( $attributes['columnWidth'] ) ) ) : 125;
 $pinned_entry_ids = array_values(
@@ -59,7 +60,7 @@ if ( is_wp_error( $entries ) ) {
 	return;
 }
 
-echo '<div class="petition-names-list"
+echo '<div class="petition-names-list' . ( $show_animations ? '' : ' no-animations' ) . '"
 	style="--petition-names-column-width: ' . esc_attr( $column_width ) . 'px;"
 	data-form-id="' . esc_attr( $form_id ) . '"
 	data-name-field-id="' . esc_attr( $name_field_id ) . '"

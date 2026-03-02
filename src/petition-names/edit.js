@@ -40,6 +40,7 @@ export default function Edit({ attributes, setAttributes }) {
 		pinnedEntryIds = [],
 		itemsPerPage = 60,
 		columnWidth = 125,
+		showAnimations = true,
 		showGravatars = false,
 		emailFieldId = "",
 	} = attributes;
@@ -365,6 +366,15 @@ export default function Edit({ attributes, setAttributes }) {
 								setAttributes({ columnWidth: numValue });
 							}
 						}}
+					/>
+					<ToggleControl
+						label={__("Enable signatory animations", "petition-names")}
+						help={__(
+							"Animate names as they appear in the public-facing list.",
+							"petition-names",
+						)}
+						checked={showAnimations}
+						onChange={(value) => setAttributes({ showAnimations: value })}
 					/>
 				</PanelBody>
 				<PanelBody
