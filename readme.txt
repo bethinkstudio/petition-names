@@ -2,7 +2,8 @@
 Contributors:      Bethink Studio, georgestephanis
 Tags:              block, petition, gravity forms, names, signatures, gravatars, pagination
 Tested up to:      6.8
-Stable tag:        0.3.3
+Stable tag:        0.3.4
+Requires Plugins:  gravityforms
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -73,15 +74,14 @@ You can customize the column width (50-400px) in the Display Settings. The numbe
 
 The plugin works with Name fields and Text fields for displaying names, and Email fields for Gravatar integration. It's designed to work with standard petition form setups.
 
-== Screenshots ==
-
-1. **Block Settings** - Easy configuration in the WordPress Block Editor sidebar
-2. **Multi-Column Display** - Responsive layout automatically adjusts to screen size
-3. **Gravatar Integration** - Profile pictures add personality to your petition display
-4. **Pagination Controls** - Clean, accessible pagination for large lists
-5. **Pinned Entries** - Highlight important signatories at the top of your list
-
 == Changelog ==
+
+= 0.3.4 =
+* Added display sorting controls for responses (received date, first name, last name)
+* Added ascending/descending sort order toggle in block settings
+* Fixed editor preview so multiple pinned entries consistently render at the top
+* Declared Gravity Forms (`gravityforms`) as a required plugin dependency in plugin metadata
+* Updated plugin documentation and added a GitHub-flavored README.md
 
 = 0.3.3 =
 * Added a new block setting to enable or disable signatory display animations
@@ -132,6 +132,9 @@ The plugin works with Name fields and Text fields for displaying names, and Emai
 * WordPress Block Editor integration
 
 == Upgrade Notice ==
+
+= 0.3.4 =
+Feature and maintenance release adding sorting controls and fixing multi-pinned editor preview behavior.
 
 = 0.3.3 =
 Feature update adding an animation on/off toggle and improving editor-side preview and settings workflow.

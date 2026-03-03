@@ -5,7 +5,7 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'bethink/petition-names',
-		'version' => '0.3.3',
+		'version' => '0.3.4',
 		'title' => 'Petition Names',
 		'category' => 'widgets',
 		'icon' => 'groups',
@@ -59,6 +59,14 @@ return array(
 			'emailFieldId' => array(
 				'type' => 'string',
 				'default' => ''
+			),
+			'sortBy' => array(
+				'type' => 'string',
+				'default' => 'received'
+			),
+			'sortAscending' => array(
+				'type' => 'boolean',
+				'default' => true
 			)
 		)
 	)
