@@ -187,6 +187,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 	useEffect(() => {
 		if (!formId || !nameFieldId || !pinnedEntryIds.length) {
+			setPinnedEntriesData([]);
 			return;
 		}
 
@@ -248,9 +249,13 @@ export default function Edit({ attributes, setAttributes }) {
 		})
 			.then((data) => {
 				const recentEntries = Array.isArray(data) ? data : [];
-				const pinnedEntries = pinnedEntriesData.filter((entry) =>
-					pinnedEntryIds.includes(Number(entry.id)),
-				);
+				const pinnedEntries = pinnedEntryIds
+					.map((entryId) =>
+						pinnedEntriesData.find(
+							(entry) => Number(entry.id) === Number(entryId),
+						),
+					)
+					.filter(Boolean);
 
 				const combined = [...pinnedEntries, ...recentEntries].reduce(
 					(accumulator, entry) => {
@@ -285,6 +290,7 @@ export default function Edit({ attributes, setAttributes }) {
 		formId,
 		nameFieldId,
 		pinnedEntryIds,
+		pinnedEntriesData,
 		showGravatars,
 		emailFieldId,
 		itemsPerPage,
