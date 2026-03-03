@@ -43,6 +43,8 @@ export default function Edit({ attributes, setAttributes }) {
 		showAnimations = true,
 		showGravatars = false,
 		emailFieldId = "",
+		sortBy = "received",
+		sortAscending = true,
 	} = attributes;
 	const [forms, setForms] = useState([]);
 	const [fields, setFields] = useState([]);
@@ -141,6 +143,9 @@ export default function Edit({ attributes, setAttributes }) {
 
 		setLoadingEntrySearch(true);
 		const timeoutId = setTimeout(() => {
+			const sortParams = `&sortBy=${encodeURIComponent(sortBy)}&sortAscending=${
+				sortAscending ? "1" : "0"
+			}`;
 			const emailParam =
 				showGravatars && emailFieldId
 					? `&emailFieldId=${encodeURIComponent(emailFieldId)}`
@@ -148,7 +153,9 @@ export default function Edit({ attributes, setAttributes }) {
 			wp.apiFetch({
 				path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 					nameFieldId,
-				)}&search=${encodeURIComponent(entrySearch.trim())}${emailParam}`,
+				)}&search=${encodeURIComponent(
+					entrySearch.trim(),
+				)}${emailParam}${sortParams}`,
 			})
 				.then((data) => {
 					setEntryResults(Array.isArray(data) ? data : []);
@@ -168,7 +175,15 @@ export default function Edit({ attributes, setAttributes }) {
 		}, 250);
 
 		return () => clearTimeout(timeoutId);
-	}, [formId, nameFieldId, entrySearch, showGravatars, emailFieldId]);
+	}, [
+		formId,
+		nameFieldId,
+		entrySearch,
+		showGravatars,
+		emailFieldId,
+		sortBy,
+		sortAscending,
+	]);
 
 	useEffect(() => {
 		if (!formId || !nameFieldId || !pinnedEntryIds.length) {
@@ -179,10 +194,15 @@ export default function Edit({ attributes, setAttributes }) {
 			showGravatars && emailFieldId
 				? `&emailFieldId=${encodeURIComponent(emailFieldId)}`
 				: "";
+		const sortParams = `&sortBy=${encodeURIComponent(sortBy)}&sortAscending=${
+			sortAscending ? "1" : "0"
+		}`;
 		wp.apiFetch({
 			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 				nameFieldId,
-			)}&ids=${encodeURIComponent(pinnedEntryIds.join(","))}${emailParam}`,
+			)}&ids=${encodeURIComponent(
+				pinnedEntryIds.join(","),
+			)}${emailParam}${sortParams}`,
 		})
 			.then((data) => {
 				const pinnedData = Array.isArray(data) ? data : [];
@@ -196,7 +216,15 @@ export default function Edit({ attributes, setAttributes }) {
 				});
 			})
 			.catch(() => {});
-	}, [formId, nameFieldId, pinnedEntryIds, showGravatars, emailFieldId]);
+	}, [
+		formId,
+		nameFieldId,
+		pinnedEntryIds,
+		showGravatars,
+		emailFieldId,
+		sortBy,
+		sortAscending,
+	]);
 
 	useEffect(() => {
 		if (!formId || !nameFieldId) {
@@ -206,6 +234,9 @@ export default function Edit({ attributes, setAttributes }) {
 		}
 
 		setLoadingPreview(true);
+		const sortParams = `&sortBy=${encodeURIComponent(sortBy)}&sortAscending=${
+			sortAscending ? "1" : "0"
+		}`;
 		const emailParam =
 			showGravatars && emailFieldId
 				? `&emailFieldId=${encodeURIComponent(emailFieldId)}`
@@ -213,7 +244,7 @@ export default function Edit({ attributes, setAttributes }) {
 		wp.apiFetch({
 			path: `/petition-names/v1/forms/${formId}/entries?nameFieldId=${encodeURIComponent(
 				nameFieldId,
-			)}&limit=${itemsPerPage}${emailParam}`,
+			)}&limit=${itemsPerPage}${emailParam}${sortParams}`,
 		})
 			.then((data) => {
 				const recentEntries = Array.isArray(data) ? data : [];
@@ -250,7 +281,16 @@ export default function Edit({ attributes, setAttributes }) {
 				setPreviewEntries([]);
 				setLoadingPreview(false);
 			});
-	}, [formId, nameFieldId, pinnedEntryIds, showGravatars, emailFieldId]);
+	}, [
+		formId,
+		nameFieldId,
+		pinnedEntryIds,
+		showGravatars,
+		emailFieldId,
+		itemsPerPage,
+		sortBy,
+		sortAscending,
+	]);
 
 	const togglePinnedEntry = (entryId) => {
 		const normalizedId = Number(entryId);
@@ -375,6 +415,30 @@ export default function Edit({ attributes, setAttributes }) {
 						)}
 						checked={showAnimations}
 						onChange={(value) => setAttributes({ showAnimations: value })}
+					/>
+					<SelectControl
+						label={__("Sort responses by", "petition-names")}
+						value={sortBy}
+						options={[
+							{
+								label: __("Received date", "petition-names"),
+								value: "received",
+							},
+							{
+								label: __("First name", "petition-names"),
+								value: "first_name",
+							},
+							{
+								label: __("Last name", "petition-names"),
+								value: "last_name",
+							},
+						]}
+						onChange={(value) => setAttributes({ sortBy: value })}
+					/>
+					<ToggleControl
+						label={__("Ascending order", "petition-names")}
+						checked={sortAscending}
+						onChange={(value) => setAttributes({ sortAscending: value })}
 					/>
 				</PanelBody>
 				<PanelBody

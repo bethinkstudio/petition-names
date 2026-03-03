@@ -54,6 +54,36 @@ function bethink_petition_names_format_entry_name( $entry, $name_field_id ) {
 }
 
 /**
+ * Build Gravity Forms sorting arguments from block/API settings.
+ *
+ * @param string $sort_by       Sort key from settings.
+ * @param bool   $sort_ascending Whether sort is ascending.
+ * @param int    $name_field_id Name field ID.
+ * @return array
+ */
+function bethink_petition_names_get_sorting_args( $sort_by, $sort_ascending, $name_field_id ) {
+	$name_field_id = absint( $name_field_id );
+	$sort_by       = sanitize_key( (string) $sort_by );
+
+	$sorting_key = 'date_created';
+	if ( $name_field_id > 0 ) {
+		switch ( $sort_by ) {
+			case 'first_name':
+				$sorting_key = "{$name_field_id}.3";
+				break;
+			case 'last_name':
+				$sorting_key = "{$name_field_id}.6";
+				break;
+		}
+	}
+
+	return array(
+		'key'       => $sorting_key,
+		'direction' => $sort_ascending ? 'ASC' : 'DESC',
+	);
+}
+
+/**
  * Register REST route for searching entries in a selected form.
  */
 function bethink_petition_names_register_rest_routes() {
@@ -105,6 +135,14 @@ function bethink_petition_names_register_rest_routes() {
 				'pinnedEntryIds' => array(
 					'required' => false,
 					'type'     => 'array',
+				),
+				'sortBy'         => array(
+					'required' => false,
+					'type'     => 'string',
+				),
+				'sortAscending'  => array(
+					'required' => false,
+					'type'     => 'boolean',
 				),
 			),
 		)
@@ -257,6 +295,10 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 	$form_id        = absint( $request['form_id'] );
 	$name_field_id  = absint( $request->get_param( 'nameFieldId' ) );
 	$email_field_id = absint( $request->get_param( 'emailFieldId' ) );
+	$sort_by        = sanitize_key( (string) $request->get_param( 'sortBy' ) );
+	$sort_ascending = null !== $request->get_param( 'sortAscending' )
+		? rest_sanitize_boolean( $request->get_param( 'sortAscending' ) )
+		: true;
 	$ids_raw        = (string) $request->get_param( 'ids' );
 	$limit          = absint( $request->get_param( 'limit' ) );
 	$page_size      = $limit > 0 ? min( 60, $limit ) : 30;
@@ -311,10 +353,7 @@ function bethink_petition_names_rest_entries( WP_REST_Request $request ) {
 		);
 	}
 
-	$sorting = array(
-		'key'       => 'date_created',
-		'direction' => 'DESC',
-	);
+	$sorting = bethink_petition_names_get_sorting_args( $sort_by, $sort_ascending, $name_field_id );
 	$paging  = array(
 		'offset'    => 0,
 		'page_size' => $page_size,
@@ -369,6 +408,10 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 	$page             = absint( $request['page'] );
 	$name_field_id    = absint( $request->get_param( 'nameFieldId' ) );
 	$email_field_id   = absint( $request->get_param( 'emailFieldId' ) );
+	$sort_by          = sanitize_key( (string) $request->get_param( 'sortBy' ) );
+	$sort_ascending   = null !== $request->get_param( 'sortAscending' )
+		? rest_sanitize_boolean( $request->get_param( 'sortAscending' ) )
+		: true;
 	$items_per_page   = absint( $request->get_param( 'itemsPerPage' ) );
 	$pinned_entry_ids = $request->get_param( 'pinnedEntryIds' );
 	if ( $items_per_page <= 0 ) {
@@ -423,10 +466,7 @@ function bethink_petition_names_rest_pagination( WP_REST_Request $request ) {
 		);
 	}
 
-	$sorting = array(
-		'key'       => 'date_created',
-		'direction' => 'DESC',
-	);
+	$sorting = bethink_petition_names_get_sorting_args( $sort_by, $sort_ascending, $name_field_id );
 	$paging  = array(
 		'offset'    => $offset,
 		'page_size' => $items_per_page,

@@ -33,6 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			formId: listContainer.dataset.formId,
 			nameFieldId: listContainer.dataset.nameFieldId,
 			emailFieldId: listContainer.dataset.emailFieldId || 0,
+			sortBy: listContainer.dataset.sortBy || "received",
+			sortAscending: listContainer.dataset.sortAscending !== "0",
 			itemsPerPage: parseInt(listContainer.dataset.itemsPerPage) || 60,
 			pinnedEntries: JSON.parse(listContainer.dataset.pinnedEntries || "[]"),
 		};
@@ -73,6 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			const params = new URLSearchParams({
 				nameFieldId: config.nameFieldId,
 				itemsPerPage: config.itemsPerPage,
+				sortBy: config.sortBy,
+				sortAscending: config.sortAscending ? "1" : "0",
 			});
 
 			if (config.emailFieldId > 0) {

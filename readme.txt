@@ -61,6 +61,10 @@ Enable the "Show profile pictures" toggle in the block settings, then select an 
 
 Yes! Use the "Pinned submissions" feature to search for and pin specific entries to the top of your list. Great for highlighting notable supporters or organizers.
 
+= Can I control the sort order of responses? =
+
+Yes. In **Display Settings**, choose whether to sort by received date, first name, or last name, and use the **Ascending order** toggle to switch between ascending and descending order.
+
 = How do I adjust the column layout? =
 
 You can customize the column width (50-400px) in the Display Settings. The number of columns automatically adjusts based on available space and your chosen width.

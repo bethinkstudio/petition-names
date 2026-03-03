@@ -21,6 +21,8 @@ $form_id          = absint( $attributes['formId'] );
 $name_field_id    = absint( $attributes['nameFieldId'] );
 $show_animations  = ! isset( $attributes['showAnimations'] ) || ! empty( $attributes['showAnimations'] );
 $email_field_id   = isset( $attributes['showGravatars'] ) && $attributes['showGravatars'] ? absint( $attributes['emailFieldId'] ) : 0;
+$sort_by          = isset( $attributes['sortBy'] ) ? sanitize_key( (string) $attributes['sortBy'] ) : 'received';
+$sort_ascending   = isset( $attributes['sortAscending'] ) ? rest_sanitize_boolean( $attributes['sortAscending'] ) : true;
 $column_width     = isset( $attributes['columnWidth'] ) ? max( 50, min( 400, absint( $attributes['columnWidth'] ) ) ) : 125;
 $pinned_entry_ids = array_values(
 	array_unique(
@@ -43,10 +45,12 @@ if ( ! empty( $pinned_entry_ids ) ) {
 		),
 	);
 }
-$sorting = array(
-	'key'       => 'date_created',
-	'direction' => 'DESC',
-);
+$sorting = function_exists( 'bethink_petition_names_get_sorting_args' )
+	? bethink_petition_names_get_sorting_args( $sort_by, $sort_ascending, $name_field_id )
+	: array(
+		'key'       => 'date_created',
+		'direction' => $sort_ascending ? 'ASC' : 'DESC',
+	);
 $paging  = array(
 	'offset'    => $offset,
 	'page_size' => $items_per_page,
@@ -65,6 +69,8 @@ echo '<div class="petition-names-list' . ( $show_animations ? '' : ' no-animatio
 	data-form-id="' . esc_attr( $form_id ) . '"
 	data-name-field-id="' . esc_attr( $name_field_id ) . '"
 	data-email-field-id="' . esc_attr( $email_field_id ) . '"
+	data-sort-by="' . esc_attr( $sort_by ) . '"
+	data-sort-ascending="' . esc_attr( $sort_ascending ? '1' : '0' ) . '"
 	data-items-per-page="' . esc_attr( $items_per_page ) . '"
 	data-pinned-entries="' . esc_attr( wp_json_encode( $pinned_entry_ids ) ) . '"
 ><ul class="petition-names-entries">';

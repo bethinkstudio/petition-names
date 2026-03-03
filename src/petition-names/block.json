@@ -52,6 +52,14 @@
 		"emailFieldId": {
 			"type": "string",
 			"default": ""
+		},
+		"sortBy": {
+			"type": "string",
+			"default": "received"
+		},
+		"sortAscending": {
+			"type": "boolean",
+			"default": true
 		}
 	}
 }
